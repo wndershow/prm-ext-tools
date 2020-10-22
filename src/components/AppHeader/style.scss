@@ -1,0 +1,21 @@
+.com-app-header {
+  height: 100%;
+  > .-logo {
+    padding-left: 10px;
+  }
+  > .-close {
+    width: 42px;
+    height: 42px;
+    text-align: center;
+    line-height: 42px;
+  }
+  > .-main {
+    text-align: center;
+    font-weight: 900;
+    font-size: 1.2em;
+    a {
+      color: $text-color;
+      text-decoration: none;
+    }
+  }
+}

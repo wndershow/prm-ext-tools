@@ -1,0 +1,24 @@
+.btn {
+  @include button-reset;
+  background-color: #1890ff;
+  color: white;
+  border: 1px solid #1890ff;
+  border-radius: 3px;
+  display: inline-block;
+  vertical-align: middle;
+  outline: none;
+  text-decoration: none;
+  height: 38px !important;
+  line-height: 36px !important;
+  padding: 0 20px !important;
+  &:hover,
+  &:focus {
+    color: #1890ff;
+    border-color: currentColor;
+    background-color: white;
+  }
+  &:active {
+    transform: translateY(1px);
+    filter: saturate(150%);
+  }
+}

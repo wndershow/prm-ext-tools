@@ -1,0 +1,17 @@
+$color-gray: #aaa;
+
+$main-bg-color: #eceff1;
+
+$border-color: #dddddd;
+$border-color-l: #aaaaaa;
+
+$text-color: #333;
+
+@mixin button-reset {
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  cursor: pointer;
+}

@@ -1,0 +1,19 @@
+.com-search-box {
+  border: 1px solid $border-color;
+  background-color: white;
+  input {
+    border: none;
+    display: block;
+    width: 100%;
+    outline: none;
+  }
+  .-input {
+    padding: 0 10px;
+  }
+  .-btn {
+    width: 38px;
+    height: 38px;
+    text-align: center;
+    line-height: 36px;
+  }
+}
