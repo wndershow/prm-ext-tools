@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "WhatsDis",
+  "name": "Prm Ext Tools",
   "version": "1.0",
-  "description": "WhatsDis ext",
+  "description": "Prm Txt Tools",
   "icons": {
     "16": "img/icon16.png",
     "48": "img/icon48.png",
@@ -13,8 +13,12 @@
       "19": "img/icon48.png",
       "38": "img/icon48.png"
     },
-    "default_title": "WhatsDis",
+    "default_title": "prm-ext-tools",
     "default_popup": "index.html"
+  },
+  "permissions": ["tabs"],
+  "background": {
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {

@@ -7,10 +7,11 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
   entry: {
     index: './src/index.js',
+    background: ['@babel/polyfill', './src/background/index.js'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'index.js',
+    filename: '[name].js',
   },
   module: {
     rules: [
