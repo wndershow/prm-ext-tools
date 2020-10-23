@@ -19,7 +19,6 @@ export default () => {
       $item && $item.querySelector('div.voucher-btn').click();
     } else if (__page_type === 'detail' && lastDetailIdx) {
       const $track = document.querySelector('div.popover-content input[data-copy-to-clipboard]');
-      console.info($track.value, '_____');
       await _storage.set({ __last_detail_idx: '' });
     }
   }, []);
