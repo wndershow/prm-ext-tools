@@ -25,3 +25,30 @@ li {
   padding: 0;
   list-style: none;
 }
+
+table {
+  border-width: 1px;
+  border-color: #999999;
+  border-collapse: collapse;
+  width: 100%;
+}
+table th {
+  background-color: #eee;
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #999999;
+}
+table td {
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #999999;
+}
+
+input,
+select {
+  border: 1px solid #888;
+  padding: 2px 5px;
+  border-radius: 3px;
+}

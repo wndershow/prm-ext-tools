@@ -1,0 +1,26 @@
+.com-list-form {
+  position: fixed;
+  width: 860px;
+  min-height: 300px;
+  border: 1px solid #ddd;
+  z-index: 100001;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+  padding: 60px 30px 30px 30px;
+  background-color: white;
+  .-close {
+    position: absolute;
+    display: inline-block;
+    right: 20px;
+    top: 20px;
+    cursor: pointer;
+    color: cornflowerblue;
+  }
+  input {
+    width: 100%;
+  }
+}
