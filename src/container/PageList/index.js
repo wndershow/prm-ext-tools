@@ -6,7 +6,8 @@ import { useStore } from '@/lib/storage';
 const PageList = () => {
   const [showListForm, setShowListForm] = useState(false);
   const [coupons, setCoupons] = useState([]);
-  const detailCode = useStore('detailCode');
+
+  const detailCode = useStore('detailCode', { namespace: `cs_1` });
 
   useEffect(() => {
     if (!showListForm || !detailCode) return;
@@ -18,7 +19,7 @@ const PageList = () => {
   const handleCrawl = () => {
     const $couponItems = document.querySelectorAll('section.cept-voucher-widget>article');
     let ces = [];
-    $couponItems.forEach($item => {
+    $couponItems.forEach(($item) => {
       let t = $item.querySelector('a.js-gutscheinsammler-item').getAttribute('data-voucher-button');
       t = t.match(/[\d]{1,}/);
       let id = t[0] || '';

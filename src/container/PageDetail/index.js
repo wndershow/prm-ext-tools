@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { getQuery } from '@/lib/url';
 import { setStore, getStore } from '@/lib/storage';
+import { sendMsg } from '@/lib/runtime';
 import style from './style.scss';
 
 const PageDetail = () => {
@@ -11,21 +12,27 @@ const PageDetail = () => {
 
   useEffect(async () => {
     const trigged = await getStore(triggedKey, false, { namespace: `cs_${csId}` });
-    chrome.runtime.sendMessage('new_tab');
+    await sendMsg('new_tab');
+
+    console.info(triggerType, `____0`, trigged);
 
     if (triggerType === 'click' && !trigged) {
+      console.info(`____1`);
       await setStore(triggedKey, true, { namespace: `cs_${csId}` });
       const $couponItems = document.querySelectorAll('section.cept-voucher-widget>article');
       const $item = $couponItems[itemIdx];
       $item && $item.querySelector('div.voucher-btn').click();
     } else if (triggerType === 'click' && trigged) {
+      console.info(`____2`);
+
       const $track = document.querySelector('div.popover-content input[data-copy-to-clipboard]');
       const detailCode = {
         idx: itemIdx,
         code: ($track && $track.value) || '',
       };
       await setStore('detailCode', detailCode, { namespace: `cs_${csId}` });
-      chrome.runtime.sendMessage('close_tabs');
+
+      sendMsg('close_tabs');
     }
   }, []);
 

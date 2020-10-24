@@ -3,7 +3,7 @@ import * as _url from '@/lib/url';
 
 (async () => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    new Promise(rs => rs()).then(async () => {
+    new Promise((rs) => rs()).then(async () => {
       if (message === 'start_crawl') {
       } else if (message === 'close_tabs') {
         handleCloseTabs({ message, sendResponse, sender });
@@ -16,13 +16,14 @@ import * as _url from '@/lib/url';
   });
 })();
 
-const handleCloseTabs = async ({ sender }) => {
-  // const { tab } = sender;
-  // if (!tab) return;
-  // let csId = _url.getQuery('__cs_id', tab.url);
-  const penddingCloseTabs = await getStore('pendding_close_tabs', [], { namespace: `cs_1` });
+const handleCloseTabs = async ({ sender, sendResponse }) => {
+  const { tab } = sender;
+  if (!tab) return;
+  let csId = _url.getQuery('__cs_id', tab.url);
+  const penddingCloseTabs = await getStore('pendding_close_tabs', [], { namespace: `cs_${csId}` });
   console.info('close tab: ', penddingCloseTabs);
   chrome.tabs.remove(penddingCloseTabs);
+  sendResponse('ok');
 };
 
 const handleNewTab = async ({ message, sendResponse, sender }) => {
@@ -31,6 +32,6 @@ const handleNewTab = async ({ message, sendResponse, sender }) => {
   let csId = _url.getQuery('__cs_id', tab.url);
   const penddingCloseTabs = await getStore('pendding_close_tabs', [], { namespace: `cs_${csId}` });
   penddingCloseTabs.push(tab.id);
-  await setStore('pendding_close_tabs', penddingCloseTabs, { namespace: `cs_${csId}` });
-  console.info(penddingCloseTabs, '____', csId);
+  await setStore('pendding_close_tabs', [...penddingCloseTabs], { namespace: `cs_${csId}` });
+  sendResponse('ok');
 };

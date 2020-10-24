@@ -5,9 +5,7 @@ import { getQuery } from '@/lib/url';
 const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
   const csId = getQuery('__cs_id');
 
-  const handleOnSave = async () => {
-    chrome.runtime.sendMessage('new_tab');
-  };
+  const handleOnSave = async () => {};
 
   return (
     <div className="com-list-form">
@@ -32,7 +30,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
                   <input
                     type="text"
                     value={n.__id}
-                    onChange={e => onChange && onChange({ idx: i, value: { ...n, __id: e.target.value } })}
+                    onChange={(e) => onChange && onChange({ idx: i, value: { ...n, __id: e.target.value } })}
                   />
                 </td>
                 <td>
@@ -40,13 +38,13 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
                     className="db"
                     type="text"
                     value={n.title}
-                    onChange={e => onChange && onChange({ idx: i, value: { ...n, title: e.target.value } })}
+                    onChange={(e) => onChange && onChange({ idx: i, value: { ...n, title: e.target.value } })}
                   />
                 </td>
                 <td className="tc">
                   <select
                     value={n.type}
-                    onChange={e => onChange && onChange({ idx: i, value: { ...n, type: e.target.value } })}
+                    onChange={(e) => onChange && onChange({ idx: i, value: { ...n, type: e.target.value } })}
                   >
                     <option value="code">code</option>
                     <option value="deal">deal</option>
@@ -56,7 +54,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
                   <input
                     type="text"
                     value={n.code}
-                    onChange={e => onChange && onChange({ idx: i, value: { ...n, code: e.target.value } })}
+                    onChange={(e) => onChange && onChange({ idx: i, value: { ...n, code: e.target.value } })}
                   />
                 </td>
                 <td className="tc">
