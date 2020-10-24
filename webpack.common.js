@@ -6,8 +6,8 @@ const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   entry: {
-    index: ['@babel/polyfill', './src/index.js'],
-    background: ['@babel/polyfill', './src/background/index.js'],
+    index: ['./src/index.js'],
+    background: ['./src/background/index.js'],
   },
   output: {
     path: path.join(__dirname, 'dist'),

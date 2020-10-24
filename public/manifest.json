@@ -16,7 +16,7 @@
     "default_title": "prm-ext-tools",
     "default_popup": "index.html"
   },
-  "permissions": ["tabs", "storage"],
+  "permissions": ["tabs", "storage", "*://*/*"],
   "background": {
     "scripts": ["background.js"]
   },

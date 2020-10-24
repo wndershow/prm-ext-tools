@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import style from './style.scss';
 import ListForm from '@/components/ListForm';
+import { useStore } from '@/lib/storage';
 
-const StartCrawlHandle = () => {
+const PageList = () => {
   const [showListForm, setShowListForm] = useState(false);
   const [coupons, setCoupons] = useState([]);
+  const detailCode = useStore('detailCode');
 
   useEffect(() => {
-    chrome.storage.onChanged.addListener(function(changes, areaName) {
-      console.log('Value in ' + areaName + ' has been changed:');
-      console.log(changes);
-    });
-  }, []);
+    if (!showListForm || !detailCode) return;
+    let ces = [...coupons];
+    ces[detailCode.idx].code = detailCode.code;
+    setCoupons(ces);
+  }, [detailCode, showListForm]);
 
   const handleCrawl = () => {
     const $couponItems = document.querySelectorAll('section.cept-voucher-widget>article');
@@ -55,4 +57,4 @@ const StartCrawlHandle = () => {
   );
 };
 
-export default StartCrawlHandle;
+export default PageList;

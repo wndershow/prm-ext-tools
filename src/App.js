@@ -1,31 +1,28 @@
 import { useEffect, useState } from 'react';
 import style from '@/app.scss';
-import StartCrawlHandle from '@/container/StartCrawlHandle';
+import PageList from '@/container/PageList';
+import PageDetail from '@/container/PageDetail';
 import * as _storage from '@/lib/storage';
+import { getQuery } from '@/lib/url';
 
 export default () => {
   const [pageType, setPageType] = useState('');
+  const [open, setOpen] = useState('');
 
   useEffect(async () => {
-    const parseUrl = new URL(window.location.href);
-    const __page_type = parseUrl.searchParams.get('__page_type');
-    const __idx = parseUrl.searchParams.get('__idx');
+    const __ext_tools = getQuery('__ext_tools');
+    const __page_type = getQuery('__page_type');
+
     setPageType(__page_type);
-    const { __last_detail_idx: lastDetailIdx } = await _storage.get({ __last_detail_idx: '' });
-    if (__page_type === 'detail' && !lastDetailIdx) {
-      await _storage.set({ __last_detail_idx: __idx });
-      const $couponItems = document.querySelectorAll('section.cept-voucher-widget>article');
-      const $item = $couponItems[__idx];
-      $item && $item.querySelector('div.voucher-btn').click();
-    } else if (__page_type === 'detail' && lastDetailIdx) {
-      const $track = document.querySelector('div.popover-content input[data-copy-to-clipboard]');
-      await _storage.set({ __last_detail_idx: '' });
-    }
+    setOpen(__ext_tools);
   }, []);
+
+  if (open !== 'y') return null;
 
   return (
     <div className="app">
-      {pageType === 'list' && <StartCrawlHandle></StartCrawlHandle>}
+      {pageType === 'list' && <PageList></PageList>}
+      {pageType === 'detail' && <PageDetail></PageDetail>}
       <style>{style[0][1]}</style>
     </div>
   );

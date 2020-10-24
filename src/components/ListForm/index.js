@@ -1,8 +1,12 @@
 import style from './style.scss';
+import { setStore, clear, getStore } from '@/lib/storage';
+import { getQuery } from '@/lib/url';
 
 const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
-  const handleOnSave = () => {
-    console.info(coupons);
+  const csId = getQuery('__cs_id');
+
+  const handleOnSave = async () => {
+    chrome.runtime.sendMessage('new_tab');
   };
 
   return (
@@ -56,7 +60,15 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
                   />
                 </td>
                 <td className="tc">
-                  <a href={`https://www.mydealz.de/gutscheine/lidl-de?__page_type=detail&__idx=${i}`} target="_blank">
+                  <a
+                    onClick={() => {
+                      clear(`cs_${csId}`);
+                      window.open(
+                        `https://www.mydealz.de/gutscheine/lidl-de/?__ext_tools=y&__page_type=detail&__trigger_type=click&__item_idx=${i}&__cs_id=${csId}`,
+                        '_blank'
+                      );
+                    }}
+                  >
                     fc
                   </a>
                 </td>
