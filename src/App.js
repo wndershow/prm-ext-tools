@@ -3,7 +3,7 @@ import style from '@/app.scss';
 import PageList from '@/container/PageList';
 import PageDetail from '@/container/PageDetail';
 import * as _storage from '@/lib/storage';
-import { getQuery } from '@/lib/url';
+import { getQuery, getHostname } from '@/lib/url';
 
 export default () => {
   const [pageType, setPageType] = useState('');

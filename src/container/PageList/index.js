@@ -1,25 +1,22 @@
 import { useState, useEffect } from 'react';
 import style from './style.scss';
 import ListForm from '@/components/ListForm';
-import { useStore } from '@/lib/storage';
+import { useStore, clear, setStore } from '@/lib/storage';
+import { getQuery } from '@/lib/url';
 
 const PageList = () => {
   const [showListForm, setShowListForm] = useState(false);
-  const [coupons, setCoupons] = useState([]);
+  const csId = getQuery('__cs_id');
+  const namespace = `cs_${csId}`;
 
-  const detailCode = useStore('detailCode', { namespace: `cs_1` });
+  let { coupons } = useStore('coupons', { namespace });
+  coupons = coupons || [];
 
-  useEffect(() => {
-    if (!showListForm || !detailCode) return;
-    let ces = [...coupons];
-    ces[detailCode.idx].code = detailCode.code;
-    setCoupons(ces);
-  }, [detailCode, showListForm]);
-
-  const handleCrawl = () => {
+  const handleCrawl = async () => {
+    await clear(`cs_${csId}`);
     const $couponItems = document.querySelectorAll('section.cept-voucher-widget>article');
     let ces = [];
-    $couponItems.forEach(($item) => {
+    $couponItems.forEach($item => {
       let t = $item.querySelector('a.js-gutscheinsammler-item').getAttribute('data-voucher-button');
       t = t.match(/[\d]{1,}/);
       let id = t[0] || '';
@@ -31,12 +28,10 @@ const PageList = () => {
         code: '',
       });
     });
-
     setShowListForm(true);
-    setCoupons(ces);
-
-    // chrome.runtime.sendMessage('start_crawl');
+    await setStore('coupons', ces, { namespace });
   };
+
   return (
     <div className="container-start-crawl-handle">
       {!showListForm && <button onClick={handleCrawl}>start crawl</button>}

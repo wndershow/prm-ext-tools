@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 
-export const set = (items) => {
+export const set = items => {
   return new Promise((rs, rj) => {
-    chrome.storage.local.set(items, function () {
+    chrome.storage.local.set(items, function() {
       rs();
     });
   });
 };
 
-export const get = (items) => {
+export const get = items => {
   return new Promise((rs, rj) => {
-    chrome.storage.local.get(items, function (result) {
+    chrome.storage.local.get(items, function(result) {
       rs(result);
     });
   });
@@ -32,9 +32,9 @@ export const clear = (namespace = null) => {
   });
 };
 
-export const remove = (keys) => {
+export const remove = keys => {
   return new Promise((rs, rj) => {
-    chrome.storage.local.remove(keys, function () {
+    chrome.storage.local.remove(keys, function() {
       rs();
     });
   });
@@ -79,13 +79,18 @@ export const getStore = async (name, value = null, { namespace = '' } = {}) => {
 };
 
 export const useStore = (name, { namespace = '' } = {}) => {
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState({});
+  const names = typeof name === 'string' ? [name] : name;
 
   useEffect(async () => {
-    let data = await getStore(name, null, { namespace });
+    let data = {};
+    for (let index = 0; index < names.length; index++) {
+      const n = names[index];
+      data[n] = await getStore(n, null, { namespace });
+    }
     setValue(data);
 
-    chrome.storage.onChanged.addListener(function (changes, area) {
+    chrome.storage.onChanged.addListener(function(changes, area) {
       if (!changes.__ext_tools) return;
       let store = null;
 
@@ -97,11 +102,22 @@ export const useStore = (name, { namespace = '' } = {}) => {
 
       if (namespace) {
         const spaceStore = store[namespace] || {};
-        setValue(spaceStore[name] || null);
+
+        const data = {};
+        for (let index = 0; index < names.length; index++) {
+          const n = names[index];
+          data[n] = spaceStore[n] || null;
+        }
+        setValue(data);
         return;
       }
 
-      return setValue(store[name] || null);
+      const data = {};
+      for (let index = 0; index < names.length; index++) {
+        const n = names[index];
+        data[n] = store[n] || null;
+      }
+      return setValue(data);
     });
   }, [name, namespace]);
 

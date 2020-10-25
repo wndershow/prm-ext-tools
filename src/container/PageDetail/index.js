@@ -8,31 +8,34 @@ const PageDetail = () => {
   const triggerType = getQuery('__trigger_type');
   const itemIdx = getQuery('__item_idx');
   const csId = getQuery('__cs_id');
+  const domain = getQuery('__domain');
   const triggedKey = `trigged_${itemIdx}`;
+  const namespace = `cs_${csId}`;
 
   useEffect(async () => {
-    const trigged = await getStore(triggedKey, false, { namespace: `cs_${csId}` });
-    await sendMsg('new_tab');
-
-    console.info(triggerType, `____0`, trigged);
+    const trigged = await getStore(triggedKey, false, { namespace });
 
     if (triggerType === 'click' && !trigged) {
-      console.info(`____1`);
-      await setStore(triggedKey, true, { namespace: `cs_${csId}` });
+      await sendMsg('new_tab', { csId, pageType: 'detail_trigger', itemIdx, domain });
+
+      await setStore(triggedKey, true, { namespace });
       const $couponItems = document.querySelectorAll('section.cept-voucher-widget>article');
       const $item = $couponItems[itemIdx];
       $item && $item.querySelector('div.voucher-btn').click();
     } else if (triggerType === 'click' && trigged) {
-      console.info(`____2`);
+      await sendMsg('new_tab', { csId, pageType: 'detail_code', itemIdx, domain });
 
       const $track = document.querySelector('div.popover-content input[data-copy-to-clipboard]');
-      const detailCode = {
-        idx: itemIdx,
-        code: ($track && $track.value) || '',
-      };
-      await setStore('detailCode', detailCode, { namespace: `cs_${csId}` });
+      const code = ($track && $track.value) || '';
 
-      sendMsg('close_tabs');
+      const coupons = await getStore('coupons', [], { namespace });
+      if (coupons[itemIdx]) {
+        coupons[itemIdx].code = code;
+      }
+
+      await setStore('coupons', coupons, { namespace });
+
+      await sendMsg('close_tab');
     }
   }, []);
 

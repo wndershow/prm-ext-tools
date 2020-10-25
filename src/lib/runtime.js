@@ -1,6 +1,6 @@
-export const sendMsg = (message, options = {}) => {
+export const sendMsg = (type, payload = {}) => {
   return new Promise((rs, rj) => {
-    chrome.runtime.sendMessage(message, function (response) {
+    chrome.runtime.sendMessage({ type, payload }, function(response) {
       rs(response);
     });
   });
