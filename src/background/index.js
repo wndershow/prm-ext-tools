@@ -2,6 +2,10 @@ import { getStore, setStore } from '@/lib/storage';
 import * as _url from '@/lib/url';
 
 (async () => {
+  chrome.runtime.onInstalled.addListener(() => {
+    console.info(`______xxxx`);
+  });
+
   chrome.runtime.onMessage.addListener(({ type, payload }, sender, sendResponse) => {
     new Promise(rs => rs()).then(async () => {
       if (type === 'start_crawl') {

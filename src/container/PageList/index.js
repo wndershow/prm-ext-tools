@@ -1,47 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import style from './style.scss';
 import ListForm from '@/components/ListForm';
 import { useStore, clear, setStore } from '@/lib/storage';
 import { getQuery } from '@/lib/url';
+import Crawler from '@/crawler';
 
 const PageList = () => {
   const [showListForm, setShowListForm] = useState(false);
   const csId = getQuery('__cs_id');
   const namespace = `cs_${csId}`;
+  const crawler = Crawler({ document });
 
   let { coupons } = useStore('coupons', { namespace });
   coupons = coupons || [];
 
   const handleCrawl = async () => {
-    await clear(`cs_${csId}`);
-    const $couponItems = document.querySelectorAll('section.cept-voucher-widget>article');
-    let ces = [];
-    $couponItems.forEach($item => {
-      let t = $item.querySelector('a.js-gutscheinsammler-item').getAttribute('data-voucher-button');
-      t = t.match(/[\d]{1,}/);
-      let id = t[0] || '';
-      let title = $item.querySelector('div.cept-voucher-widget-item-title').textContent;
-      ces.push({
-        __id: id,
-        title,
-        type: 'code',
-        code: '',
-      });
-    });
-    setShowListForm(true);
+    await clear(namespace);
+
+    let ces = await crawler.getCoupons();
+
     await setStore('coupons', ces, { namespace });
+
+    setShowListForm(true);
   };
 
   return (
-    <div className="container-start-crawl-handle">
-      {!showListForm && <button onClick={handleCrawl}>start crawl</button>}
+    <div className="container-page-list">
+      <div className="-menus">
+        {!showListForm && (
+          <div>
+            <button onClick={handleCrawl}>start crawl</button>
+          </div>
+        )}
+        <div>
+          <button onClick={handleCrawl}>test</button>
+        </div>
+      </div>
 
       {showListForm && (
         <ListForm
           onChange={({ idx, value }) => {
             const ces = [...coupons];
             ces[idx] = value;
-            setCoupons(ces);
+            setStore('coupons', ces, { namespace });
           }}
           coupons={coupons}
           onClose={() => setShowListForm(false)}

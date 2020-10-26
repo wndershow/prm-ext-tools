@@ -1,6 +1,10 @@
-.container-start-crawl-handle {
-  position: fixed;
-  right: 0px;
-  top: 0;
-  z-index: 10000;
+.container-page-list {
+  .-menus {
+    position: fixed;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 300000;
+    text-align: right;
+  }
 }
