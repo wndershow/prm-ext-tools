@@ -98,11 +98,19 @@ export default {
     return this._getValueBySelector($item, this.selectorCouponItemTerm);
   },
 
+  selectorJumpBtn: 'a.disclaimer-prepend',
+  getJumpBtn(idx) {
+    let $couponItems = this.getCouponItems();
+    let $item = $couponItems[idx] || null;
+    if (!$item) return null;
+    return $item.querySelector(this.selectorJumpBtn);
+  },
+
   getCoupons() {
     const $couponItems = this.getCouponItems();
 
     let ces = [];
-    $couponItems.forEach($item => {
+    $couponItems.forEach(($item) => {
       let id = this.getCouponItemId($item);
       if (!id) return;
 

@@ -26,6 +26,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
         <a className="-close" onClick={onClose}>
           关闭
         </a>
+        <div className="red mb2">note: need login</div>
         <table className="mb2">
           <thead>
             <tr>
@@ -41,17 +42,17 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
                 <tr key={n.id}>
                   <td className="tl">
                     <div className="flex mb1 items-center">
-                      <div className="flex-auto pr1 flex-shrink-0" style={{ width: '130px' }}>
+                      <div className="pr1 flex-shrink-0" style={{ width: '130px' }}>
                         <input
                           type="text"
                           defaultValue={n.__id}
-                          onChange={e => handleItemFieldChange('__id', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('__id', idx, e.target.value)}
                         />
                       </div>
                       <div className="flex-auto">
                         <select
                           defaultValue={n.type}
-                          onChange={e => handleItemFieldChange('type', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('type', idx, e.target.value)}
                         >
                           <option value="code">code</option>
                           <option value="deal">deal</option>
@@ -60,35 +61,40 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
                     </div>
 
                     <div className="flex items-center mb1">
-                      <div className="flex-auto pr1 flex-shrink-0" style={{ width: '130px' }}>
+                      <div className=" pr1 flex-shrink-0" style={{ width: '130px' }}>
                         <input
+                          placeholder="code"
                           type="text"
                           defaultValue={n.code}
-                          onChange={e => handleItemFieldChange('code', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('code', idx, e.target.value)}
                         />
                       </div>
                       <div className="flex-auto">
                         <input
+                          placeholder="expire at"
                           type="text"
                           defaultValue={n.expireAt}
-                          onChange={e => handleItemFieldChange('expireAt', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('expireAt', idx, e.target.value)}
                         />
                       </div>
                     </div>
 
                     <div className="flex items-center">
-                      <div className="flex-auto pr1 flex-shrink-0" style={{ width: '130px' }}>
-                        <input
-                          type="text"
+                      <div className="pr1 flex-shrink-0" style={{ width: '130px' }}>
+                        <select
+                          placeholder="valid"
                           defaultValue={n.valid}
-                          onChange={e => handleItemFieldChange('valid', idx, e.target.value)}
-                        />
+                          onChange={(e) => handleItemFieldChange('valid', idx, e.target.value)}
+                        >
+                          <option value="0">no</option>
+                          <option value="1">yes</option>
+                        </select>
                       </div>
                       <div className="flex-auto">
                         <input
                           type="text"
                           defaultValue={n.usedNum}
-                          onChange={e => handleItemFieldChange('usedNum', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('usedNum', idx, e.target.value)}
                         />
                       </div>
                     </div>
@@ -97,18 +103,20 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
                   <td>
                     <div className="mb1">
                       <input
+                        placeholder="title"
                         className="db"
                         type="text"
                         defaultValue={n.title}
-                        onChange={e => handleItemFieldChange('title', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('title', idx, e.target.value)}
                       />
                     </div>
 
                     <div>
                       <textarea
+                        placeholder="description"
                         defaultValue={n.description}
                         rows={3}
-                        onChange={e => handleItemFieldChange('description', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('description', idx, e.target.value)}
                       />
                     </div>
                   </td>
@@ -116,28 +124,37 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
                   <td>
                     <div className="mb1">
                       <input
+                        placeholder="url"
                         className="db"
                         type="text"
                         defaultValue={n.url}
-                        onChange={e => handleItemFieldChange('url', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('url', idx, e.target.value)}
                       />
                     </div>
 
                     <div>
                       <textarea
+                        placeholder="term"
                         defaultValue={n.term}
                         rows={3}
-                        onChange={e => handleItemFieldChange('term', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('term', idx, e.target.value)}
                       />
                     </div>
                   </td>
                   <td className="tc">
                     <button
                       onClick={() => {
-                        window.open(
-                          `https://www.mydealz.de/gutscheine/lidl-de/?__ext_tools=y&__page_type=detail&__trigger_type=click&__item_idx=${idx}&__cs_id=${csId}&__domain=lidl.de`,
-                          '_blank'
-                        );
+                        if (n.type === 'code' && n.code && !n.url) {
+                          window.open(
+                            `https://www.mydealz.de/gutscheine/lidl-de/?__ext_tools=y&__page_type=detail_fetch_item_url&__trigger_type=click&__item_idx=${idx}&__cs_id=${csId}&__domain=lidl.de`,
+                            '_blank'
+                          );
+                        } else {
+                          window.open(
+                            `https://www.mydealz.de/gutscheine/lidl-de/?__ext_tools=y&__page_type=detail&__trigger_type=click&__item_idx=${idx}&__cs_id=${csId}&__domain=lidl.de`,
+                            '_blank'
+                          );
+                        }
                       }}
                     >
                       fetch

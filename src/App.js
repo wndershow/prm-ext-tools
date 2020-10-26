@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import style from '@/app.scss';
 import PageList from '@/container/PageList';
 import PageDetail from '@/container/PageDetail';
+import PageDetailFetchItemUrl from '@/container/PageDetailFetchItemUrl';
 import * as _storage from '@/lib/storage';
 import { getQuery, getHostname } from '@/lib/url';
 
@@ -23,6 +24,7 @@ export default () => {
     <div className="app">
       {pageType === 'list' && <PageList></PageList>}
       {pageType === 'detail' && <PageDetail></PageDetail>}
+      {pageType === 'detail_fetch_item_url' && <PageDetailFetchItemUrl></PageDetailFetchItemUrl>}
       <style>{style[0][1]}</style>
     </div>
   );

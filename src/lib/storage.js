@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 
-export const set = items => {
+export const set = (items) => {
   return new Promise((rs, rj) => {
-    chrome.storage.local.set(items, function() {
+    chrome.storage.local.set(items, function () {
       rs();
     });
   });
 };
 
-export const get = items => {
+export const get = (items) => {
   return new Promise((rs, rj) => {
-    chrome.storage.local.get(items, function(result) {
+    chrome.storage.local.get(items, function (result) {
       rs(result);
     });
   });
@@ -32,9 +32,9 @@ export const clear = (namespace = null) => {
   });
 };
 
-export const remove = keys => {
+export const remove = (keys) => {
   return new Promise((rs, rj) => {
-    chrome.storage.local.remove(keys, function() {
+    chrome.storage.local.remove(keys, function () {
       rs();
     });
   });
@@ -90,7 +90,7 @@ export const useStore = (name, { namespace = '' } = {}) => {
     }
     setValue(data);
 
-    chrome.storage.onChanged.addListener(function(changes, area) {
+    chrome.storage.onChanged.addListener(function (changes, area) {
       if (!changes.__ext_tools) return;
       let store = null;
 

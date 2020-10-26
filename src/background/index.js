@@ -7,7 +7,7 @@ import * as _url from '@/lib/url';
   });
 
   chrome.runtime.onMessage.addListener(({ type, payload }, sender, sendResponse) => {
-    new Promise(rs => rs()).then(async () => {
+    new Promise((rs) => rs()).then(async () => {
       if (type === 'start_crawl') {
       } else if (type === 'close_tabs') {
         await handleCloseTabs({ payload, sendResponse, sender });
@@ -22,7 +22,7 @@ import * as _url from '@/lib/url';
     return true;
   });
 
-  chrome.tabs.onUpdated.addListener(async function(tabId, changeInfo, tab) {
+  chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
     let ti = await getStore(`detail_trigger_tab_info_${tab.id}`, {});
     if (ti.domain) {
       let hostname = _url.getHostname(tab.url);
@@ -65,9 +65,9 @@ const handleCloseTab = async ({ sender, sendResponse }) => {
 const handleNewTab = async ({ payload, sendResponse, sender }) => {
   const { tab } = sender;
   if (!tab || !tab.id) return;
-  const namespace = `cs_${csId}`;
 
   const { csId, pageType, itemIdx, domain } = payload;
+
   if (pageType === 'detail_trigger') {
     await setStore(`detail_trigger_tab_info_${tab.id}`, {
       id: tab.id,
@@ -76,10 +76,4 @@ const handleNewTab = async ({ payload, sendResponse, sender }) => {
       domain,
     });
   }
-
-  const penddingCloseTabs = await getStore('pendding_close_tabs', [], { namespace });
-
-  penddingCloseTabs.push(tab.id);
-
-  await setStore('pendding_close_tabs', [...penddingCloseTabs], { namespace });
 };
