@@ -1,32 +1,32 @@
 import { useEffect } from 'react';
 import { getQuery } from '@/lib/url';
+import { holder } from '@/lib/helper';
 import { setStore, getStore } from '@/lib/storage';
 import { sendMsg } from '@/lib/runtime';
+import Crawler from '@/crawler';
 import style from './style.scss';
 
 const PageDetail = () => {
-  const triggerType = getQuery('__trigger_type');
+  const forwardType = getQuery('__forward_type');
   const itemIdx = getQuery('__item_idx');
   const csId = getQuery('__cs_id');
-  const domain = getQuery('__domain');
+  const storeKwds = getQuery('__store_kwds');
   const triggedKey = `trigged_${itemIdx}`;
   const namespace = `cs_${csId}`;
+  const crawler = Crawler({ document });
 
   useEffect(async () => {
     const trigged = await getStore(triggedKey, false, { namespace });
 
-    if (triggerType === 'click' && !trigged) {
-      await sendMsg('new_tab', { csId, pageType: 'detail_trigger', itemIdx, domain });
+    if (forwardType === '1' && !trigged) {
+      await sendMsg('new_tab', { csId, pageType: 'trigger', itemIdx, storeKwds, forwardType: parseInt(forwardType) });
 
       await setStore(triggedKey, true, { namespace });
-      const $couponItems = document.querySelectorAll('section.cept-voucher-widget>article');
-      const $item = $couponItems[itemIdx];
-      $item && $item.querySelector('div.voucher-btn').click();
-    } else if (triggerType === 'click' && trigged) {
-      await sendMsg('new_tab', { csId, pageType: 'detail_code', itemIdx, domain });
-
-      const $track = document.querySelector('div.popover-content input[data-copy-to-clipboard]');
-      const code = ($track && $track.value) || '';
+      const $trigger = crawler.getDetailTrigger(itemIdx);
+      $trigger && $trigger.click();
+    } else if (forwardType === '1' && trigged) {
+      crawler.setDocument(document);
+      const code = crawler.getCouponDetailCode();
 
       const coupons = await getStore('coupons', [], { namespace });
       if (coupons[itemIdx]) {
@@ -36,6 +36,11 @@ const PageDetail = () => {
       await setStore('coupons', coupons, { namespace });
 
       await sendMsg('close_tab');
+    } else if (forwardType === '2') {
+      await holder(300);
+      await sendMsg('new_tab', { csId, pageType: 'trigger', itemIdx, storeKwds, forwardType: parseInt(forwardType) });
+      const $trigger = crawler.getDetailTrigger(itemIdx);
+      $trigger && $trigger.click();
     }
   }, []);
 

@@ -17,7 +17,7 @@ const PageList = () => {
   const handleCrawl = async () => {
     await clear(namespace);
 
-    let ces = await crawler.getCoupons();
+    let ces = await crawler.getCoupons({ csId, storeKwds: 'lidl', csUrl: 'https://www.mydealz.de/gutscheine/lidl-de' });
 
     await setStore('coupons', ces, { namespace });
 

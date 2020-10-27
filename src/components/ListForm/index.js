@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import style from './style.scss';
 import { getQuery } from '@/lib/url';
+import { sendMsg } from '@/lib/runtime';
 
 const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
   const st = useRef(null);
@@ -142,23 +143,18 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null }) => {
                     </div>
                   </td>
                   <td className="tc">
-                    <button
-                      onClick={() => {
-                        if (n.type === 'code' && n.code && !n.url) {
-                          window.open(
-                            `https://www.mydealz.de/gutscheine/lidl-de/?__ext_tools=y&__page_type=detail_fetch_item_url&__trigger_type=click&__item_idx=${idx}&__cs_id=${csId}&__domain=lidl.de`,
-                            '_blank'
-                          );
-                        } else {
-                          window.open(
-                            `https://www.mydealz.de/gutscheine/lidl-de/?__ext_tools=y&__page_type=detail&__trigger_type=click&__item_idx=${idx}&__cs_id=${csId}&__domain=lidl.de`,
-                            '_blank'
-                          );
-                        }
-                      }}
-                    >
-                      fetch
-                    </button>
+                    <span>
+                      [
+                      <a
+                        target="_blank"
+                        onClick={() => {
+                          sendMsg('create_tab', { url: n.triggerUrl, csId });
+                        }}
+                      >
+                        Fetch
+                      </a>
+                      ]
+                    </span>
                   </td>
                 </tr>
               );

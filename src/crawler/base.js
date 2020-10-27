@@ -16,11 +16,15 @@ export default {
     this.document = document;
   },
 
+  getShowAllTrigger() {
+    return null;
+  },
+
   getItemTitle() {
     return 'xxx';
   },
 
-  selectorCouponItems: 'div.cept-event-deals article[id*=thread_]',
+  selectorCouponItems: 'div.js-threadList article[id*=thread_]',
   getCouponItems() {
     const $couponItems = this.document.querySelectorAll(this.selectorCouponItems);
     return $couponItems;
@@ -98,19 +102,49 @@ export default {
     return this._getValueBySelector($item, this.selectorCouponItemTerm);
   },
 
-  selectorJumpBtn: 'a.disclaimer-prepend',
-  getJumpBtn(idx) {
+  getCouponItemTriggerType($item) {
+    return 'click';
+  },
+
+  /**
+   * @param {*} $item
+   * 1: trigger page jump out to store or product page, coupon detail page open
+   * 2: trigger page staty, jump out to store or product page
+   * 3: trigger page jump to coupon detail page, jump out to store or product page
+   */
+  getCouponItemForwardType($item, { type, code }) {
+    if (type === 'deal') return 2;
+    if (type === 'code' && !code) return 1;
+    if (type === 'code' && code) return 2;
+    return 3;
+  },
+
+  getCouponItemTriggerUrl($item, { csUrl, itemIdx, csId, storeKwds, type, code } = {}) {
+    let triggerType = this.getCouponItemTriggerType($item);
+    if (triggerType === 'na') return '';
+    let forwardType = this.getCouponItemForwardType($item, { type, code });
+    return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=${triggerType}&__forward_type=${forwardType}&__item_idx=${itemIdx}&__cs_id=${csId}&__store_kwds=${storeKwds}`;
+  },
+
+  selectorDetailTrigger: 'div.voucher-btn,a.cept-dealBtn,button.voucher-codeCopyButton>a',
+  getDetailTrigger(idx) {
     let $couponItems = this.getCouponItems();
     let $item = $couponItems[idx] || null;
     if (!$item) return null;
-    return $item.querySelector(this.selectorJumpBtn);
+    return $item.querySelector(this.selectorDetailTrigger);
   },
 
-  getCoupons() {
+  selectorCouponDetailCode: 'div.popover-content input[data-copy-to-clipboard]@value',
+  getCouponDetailCode() {
+    let code = this._getValueBySelector(this.document, this.selectorCouponDetailCode);
+    return code;
+  },
+
+  getCoupons({ csId, storeKwds, csUrl } = {}) {
     const $couponItems = this.getCouponItems();
 
     let ces = [];
-    $couponItems.forEach(($item) => {
+    $couponItems.forEach(($item, i) => {
       let id = this.getCouponItemId($item);
       if (!id) return;
 
@@ -131,6 +165,8 @@ export default {
 
       let term = this.getCouponItemTerm($item);
 
+      let triggerUrl = this.getCouponItemTriggerUrl($item, { itemIdx: i, csId, storeKwds, type, code, csUrl });
+
       ces.push({
         __id: id,
         title,
@@ -142,6 +178,7 @@ export default {
         url: '',
         term,
         description,
+        triggerUrl,
       });
     });
 

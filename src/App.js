@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import style from '@/app.scss';
 import PageList from '@/container/PageList';
-import PageDetail from '@/container/PageDetail';
-import PageDetailFetchItemUrl from '@/container/PageDetailFetchItemUrl';
+import PageTrigger from '@/container/PageTrigger';
 import * as _storage from '@/lib/storage';
-import { getQuery, getHostname } from '@/lib/url';
+import { getQuery } from '@/lib/url';
 
 export default () => {
   const [pageType, setPageType] = useState('');
@@ -23,8 +22,7 @@ export default () => {
   return (
     <div className="app">
       {pageType === 'list' && <PageList></PageList>}
-      {pageType === 'detail' && <PageDetail></PageDetail>}
-      {pageType === 'detail_fetch_item_url' && <PageDetailFetchItemUrl></PageDetailFetchItemUrl>}
+      {pageType === 'trigger' && <PageTrigger></PageTrigger>}
       <style>{style[0][1]}</style>
     </div>
   );

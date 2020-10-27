@@ -1,20 +1,18 @@
 export const getLang = (tabId = null) => {
   return new Promise((rs, rj) => {
-    chrome.tabs.detectLanguage(tabId, function(lang) {
+    chrome.tabs.detectLanguage(tabId, function (lang) {
       rs(lang);
     });
   });
 };
 
-export const create = ({ index = 0, url, active = true }) => {
+export const create = (options = {}) => {
   return new Promise((rs, rj) => {
     chrome.tabs.create(
       {
-        index,
-        url,
-        active,
+        ...options,
       },
-      tab => rs(tab)
+      (tab) => rs(tab)
     );
   });
 };
@@ -26,24 +24,32 @@ export const update = (tabId, opts = {}) => {
       {
         ...opts,
       },
-      function(tab) {
-        rs(tab);
+      function (tab) {
+        if (chrome.runtime.lastError) {
+          rs(null);
+        } else {
+          rs(tab);
+        }
       }
     );
   });
 };
 
-export const get = tabId => {
+export const get = (tabId) => {
   return new Promise((rs, rj) => {
-    chrome.tabs.get(tabId, function(tab) {
-      rs(tab);
+    chrome.tabs.get(tabId, function (tab) {
+      if (chrome.runtime.lastError) {
+        rs(null);
+      } else {
+        rs(tab);
+      }
     });
   });
 };
 
 export const getCurrent = () => {
   return new Promise((rs, rj) => {
-    chrome.tabs.getCurrent(function(tab) {
+    chrome.tabs.getCurrent(function (tab) {
       rs(tab);
     });
   });
@@ -56,9 +62,34 @@ export const getActives = ({ windowId = null } = {}) => {
         windowId,
         active: true,
       },
-      function(tabArray) {
+      function (tabArray) {
         rs(tabArray);
       }
     );
+  });
+};
+
+export const remove = async (tabIds) => {
+  await new Promise(async (rs, rj) => {
+    for (let index = 0; index < tabIds.length; index++) {
+      const tid = tabIds[index];
+      let tab = await get(tid);
+      if (tab && tab.id) {
+        await removeById(tab.id);
+      }
+    }
+    rs();
+  });
+};
+
+export const removeById = (tabId) => {
+  return new Promise(async (rs, rj) => {
+    chrome.tabs.remove([tabId], function () {
+      if (chrome.runtime.lastError) {
+        rs();
+      } else {
+        rs();
+      }
+    });
   });
 };
