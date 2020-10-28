@@ -10,7 +10,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
   };
 
   const handleBatch = async () => {
-    coupons.forEach(n => {
+    coupons.forEach((n) => {
       window.open(n.triggerUrl, '_blank');
     });
   };
@@ -63,13 +63,13 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                           className="__id"
                           type="text"
                           defaultValue={n.__id}
-                          onChange={e => handleItemFieldChange('__id', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('__id', idx, e.target.value)}
                         />
                       </div>
                       <div className="flex-auto">
                         <select
                           defaultValue={n.type}
-                          onChange={e => handleItemFieldChange('type', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('type', idx, e.target.value)}
                         >
                           <option value="code">code</option>
                           <option value="deal">deal</option>
@@ -85,7 +85,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                             type="text"
                             className={`db ${!!!n.code.trim() && 'error'}`}
                             defaultValue={n.code}
-                            onChange={e => handleItemFieldChange('code', idx, e.target.value)}
+                            onChange={(e) => handleItemFieldChange('code', idx, e.target.value)}
                           />
                         ) : (
                           '---'
@@ -97,7 +97,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                           placeholder="expire at"
                           type="text"
                           defaultValue={n.expireAt}
-                          onChange={e => handleItemFieldChange('expireAt', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('expireAt', idx, e.target.value)}
                         />
                       </div>
                     </div>
@@ -107,7 +107,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                         <select
                           placeholder="valid"
                           defaultValue={n.valid}
-                          onChange={e => handleItemFieldChange('valid', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('valid', idx, e.target.value)}
                         >
                           <option value="0">no</option>
                           <option value="1">yes</option>
@@ -117,7 +117,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                         <input
                           type="text"
                           defaultValue={n.usedNum}
-                          onChange={e => handleItemFieldChange('usedNum', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('usedNum', idx, e.target.value)}
                         />
                       </div>
                     </div>
@@ -130,7 +130,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                         className="db"
                         type="text"
                         defaultValue={n.title}
-                        onChange={e => handleItemFieldChange('title', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('title', idx, e.target.value)}
                       />
                     </div>
 
@@ -139,7 +139,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                         placeholder="description"
                         defaultValue={n.description}
                         rows={3}
-                        onChange={e => handleItemFieldChange('description', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('description', idx, e.target.value)}
                       />
                     </div>
                   </td>
@@ -151,7 +151,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                         className={`db ${!!!n.url.trim() && 'warnning'}`}
                         type="text"
                         defaultValue={n.url}
-                        onChange={e => handleItemFieldChange('url', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('url', idx, e.target.value)}
                       />
                     </div>
 
@@ -160,7 +160,7 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                         placeholder="term"
                         defaultValue={n.term}
                         rows={3}
-                        onChange={e => handleItemFieldChange('term', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('term', idx, e.target.value)}
                       />
                     </div>
                   </td>
@@ -177,8 +177,6 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
 
         <div>
           <button onClick={handleOnSave}>save</button>
-          <button onClick={handleBatch}>batch</button>
-          <button onClick={handleAuto}>auto</button>
         </div>
       </div>
 

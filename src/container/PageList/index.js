@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import style from './style.scss';
 import ListForm from '@/components/ListForm';
 import { useStore, clear, setStore, getAll } from '@/lib/storage';
-import { getQuery } from '@/lib/url';
+import { getQuery, getCurrentUrlPath } from '@/lib/url';
 import Crawler from '@/crawlers';
 
 const PageList = () => {
@@ -12,6 +12,8 @@ const PageList = () => {
 
   const cid = getQuery('__cid');
   const csId = getQuery('__cs_id');
+  const storeKwds = getQuery('__store_kwds');
+
   const namespace = `cs_${csId}`;
 
   let { coupons } = useStore('coupons', { namespace });
@@ -22,10 +24,12 @@ const PageList = () => {
 
     setHideListForm(false);
 
+    const csUrl = getCurrentUrlPath();
+
     let ces = await crawler.current.getCoupons({
       csId,
-      storeKwds: 'lidl',
-      csUrl: 'https://www.mydealz.de/gutscheine/lidl-de',
+      storeKwds,
+      csUrl,
     });
 
     await setStore('coupons', ces, { namespace });
@@ -34,6 +38,8 @@ const PageList = () => {
   };
 
   useEffect(async () => {
+    // const sourceCoupons = await $api.getCouponsByCsId(csId);
+
     const c = await Crawler({ cid });
     c.setDocument(document);
     crawler.current = c;

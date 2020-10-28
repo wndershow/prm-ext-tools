@@ -18,11 +18,11 @@ const PageDetail = () => {
   useEffect(async () => {
     const trigged = await getStore(triggedKey, false, { namespace });
     const crawler = await Crawler({ cid });
+    await holder(300);
+
     crawler.setDocument(document);
 
     if (forwardType === '1' && !trigged) {
-      await holder(300);
-
       await sendMsg('on_trigger_page_opened', {
         csId,
         pageType: 'trigger',
@@ -35,19 +35,19 @@ const PageDetail = () => {
       const $trigger = crawler.getDetailTrigger(itemIdx);
       $trigger && $trigger.click();
     } else if (forwardType === '1' && trigged) {
+      await holder(1000);
       crawler.setDocument(document);
       const code = crawler.getCouponDetailCode();
 
+      console.info(code, '_____');
+
       const coupons = await getStore('coupons', [], { namespace });
-      if (coupons[itemIdx]) {
+      if (coupons[itemIdx] && code) {
         coupons[itemIdx].code = code;
         await setStore('coupons', coupons, { namespace });
+        await sendMsg('close_tab');
       }
-
-      await sendMsg('close_tab');
     } else if (forwardType === '2') {
-      await holder(300);
-
       await sendMsg('on_trigger_page_opened', {
         csId,
         pageType: 'trigger',
