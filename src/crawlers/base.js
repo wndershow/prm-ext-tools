@@ -9,9 +9,13 @@ import 'dayjs/locale/fr';
 dayjs.extend(customParseFormat);
 
 export default {
+  cid: 0,
   document: null,
   dayjs,
 
+  setCid(cid) {
+    this.cid = cid;
+  },
   setDocument(document) {
     this.document = document;
   },
@@ -20,17 +24,13 @@ export default {
     return null;
   },
 
-  getItemTitle() {
-    return 'xxx';
-  },
-
-  selectorCouponItems: 'div.js-threadList article[id*=thread_]',
+  selectorCouponItems: '',
   getCouponItems() {
     const $couponItems = this.document.querySelectorAll(this.selectorCouponItems);
     return $couponItems;
   },
 
-  selectorCouponItemId: 'a.js-gutscheinsammler-item@data-voucher-button|@id',
+  selectorCouponItemId: '',
   getCouponItemId($item) {
     let t = this._getValueBySelector($item, this.selectorCouponItemId);
     if (!t) return '';
@@ -39,13 +39,13 @@ export default {
     return t[0];
   },
 
-  selectorCouponItemTitle: 'div.cept-voucher-widget-item-title|span.thread-title--list--merchant',
+  selectorCouponItemTitle: '',
   getCouponItemTitle($item) {
     return this._getValueBySelector($item, this.selectorCouponItemTitle);
   },
 
   coupontItemTypeCodeKwds: 'code',
-  selectorCouponItemType: 'div.voucher-btn|input[data-copy-to-clipboard]@title',
+  selectorCouponItemType: '',
   getCouponItemType($item) {
     let t = this._getValueBySelector($item, this.selectorCouponItemType);
     if (!t) return 'deal';
@@ -53,12 +53,12 @@ export default {
     return 'deal';
   },
 
-  selectorCouponItemCode: 'input[data-copy-to-clipboard]@value',
+  selectorCouponItemCode: '',
   getCouponItemCode($item) {
     return this._getValueBySelector($item, this.selectorCouponItemCode);
   },
 
-  selectorCouponItemExpireAt: 'span.lbox--v-4.size--all-m.text--color-greyShade',
+  selectorCouponItemExpireAt: '',
   getCouponItemExpireAtTrack($item) {
     let t = this._getValueBySelector($item, this.selectorCouponItemExpireAt);
     if (!t) return '';
@@ -67,10 +67,10 @@ export default {
     return t[0];
   },
   couponItemExpireAtFormat: 'DD.MM.YYYY',
-  getCouponItemExpireAt($item) {
+  getCouponItemExpireAt($item, { locale = 'de' } = {}) {
     let t = this.getCouponItemExpireAtTrack($item);
     if (!t) return '';
-    return this.dayjs(t, this.couponItemExpireAtFormat, 'de').format('YYYY-MM-DD');
+    return this.dayjs(t, this.couponItemExpireAtFormat, locale).format('YYYY-MM-DD');
   },
 
   couponItemValidKwds: 'valid',
@@ -123,7 +123,7 @@ export default {
     let triggerType = this.getCouponItemTriggerType($item);
     if (triggerType === 'na') return '';
     let forwardType = this.getCouponItemForwardType($item, { type, code });
-    return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=${triggerType}&__forward_type=${forwardType}&__item_idx=${itemIdx}&__cs_id=${csId}&__store_kwds=${storeKwds}`;
+    return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=${triggerType}&__forward_type=${forwardType}&__item_idx=${itemIdx}&__cid=${this.cid}&__cs_id=${csId}&__store_kwds=${storeKwds}`;
   },
 
   selectorDetailTrigger: 'div.voucher-btn,a.cept-dealBtn,button.voucher-codeCopyButton>a',
@@ -179,6 +179,7 @@ export default {
         term,
         description,
         triggerUrl,
+        status: 'pendding',
       });
     });
 

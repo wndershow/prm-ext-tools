@@ -1,51 +1,79 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import style from './style.scss';
 import ListForm from '@/components/ListForm';
-import { useStore, clear, setStore } from '@/lib/storage';
+import { useStore, clear, setStore, getAll } from '@/lib/storage';
 import { getQuery } from '@/lib/url';
-import Crawler from '@/crawler';
+import Crawler from '@/crawlers';
 
 const PageList = () => {
   const [showListForm, setShowListForm] = useState(false);
+  const [hideListForm, setHideListForm] = useState(false);
+  const crawler = useRef(null);
+
+  const cid = getQuery('__cid');
   const csId = getQuery('__cs_id');
   const namespace = `cs_${csId}`;
-  const crawler = Crawler({ document });
 
   let { coupons } = useStore('coupons', { namespace });
   coupons = coupons || [];
 
-  const handleCrawl = async () => {
+  const handleStart = async () => {
     await clear(namespace);
 
-    let ces = await crawler.getCoupons({ csId, storeKwds: 'lidl', csUrl: 'https://www.mydealz.de/gutscheine/lidl-de' });
+    setHideListForm(false);
+
+    let ces = await crawler.current.getCoupons({
+      csId,
+      storeKwds: 'lidl',
+      csUrl: 'https://www.mydealz.de/gutscheine/lidl-de',
+    });
 
     await setStore('coupons', ces, { namespace });
 
     setShowListForm(true);
   };
 
+  useEffect(async () => {
+    const c = await Crawler({ cid });
+    c.setDocument(document);
+    crawler.current = c;
+  }, []);
+
+  const handleRefresh = async () => {
+    const c = await Crawler({ cid, cache: false });
+    c.setDocument(document);
+    crawler.current = c;
+  };
+
   return (
     <div className="container-page-list">
       <div className="-menus">
-        {!showListForm && (
-          <div>
-            <button onClick={handleCrawl}>start crawl</button>
+        <div className="mb1">
+          <button onClick={handleStart}>start</button>
+        </div>
+
+        {showListForm && hideListForm && (
+          <div className="mb1">
+            <button onClick={() => setHideListForm(false)}>show list</button>
           </div>
         )}
-        <div>
-          <button onClick={handleCrawl}>test</button>
+
+        <div className="mb1">
+          <button onClick={handleRefresh}>refresh</button>
         </div>
       </div>
 
       {showListForm && (
         <ListForm
-          onChange={({ idx, value }) => {
+          className={hideListForm && 'dn'}
+          onChange={async ({ idx, value }) => {
             const ces = [...coupons];
             ces[idx] = value;
-            setStore('coupons', ces, { namespace });
+            await setStore('coupons', ces, { namespace });
           }}
           coupons={coupons}
           onClose={() => setShowListForm(false)}
+          onHide={() => setHideListForm(true)}
         ></ListForm>
       )}
 

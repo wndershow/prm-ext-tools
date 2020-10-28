@@ -34,6 +34,8 @@
   "dependencies": {
     "axios": "^0.20.0",
     "dayjs": "^1.9.4",
+    "graphql": "^15.4.0",
+    "graphql-request": "^3.3.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-shadow": "^18.4.2"

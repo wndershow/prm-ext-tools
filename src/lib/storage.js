@@ -1,16 +1,24 @@
 import { useEffect, useState } from 'react';
 
-export const set = (items) => {
+export const set = items => {
   return new Promise((rs, rj) => {
-    chrome.storage.local.set(items, function () {
+    chrome.storage.local.set(items, function() {
       rs();
     });
   });
 };
 
-export const get = (items) => {
+export const get = items => {
   return new Promise((rs, rj) => {
-    chrome.storage.local.get(items, function (result) {
+    chrome.storage.local.get(items, function(result) {
+      rs(result);
+    });
+  });
+};
+
+export const getAll = () => {
+  return new Promise((rs, rj) => {
+    chrome.storage.local.get(null, function(result) {
       rs(result);
     });
   });
@@ -19,11 +27,16 @@ export const get = (items) => {
 export const clear = (namespace = null) => {
   return new Promise(async (rs, rj) => {
     if (namespace) {
-      let store = await get({ __ext_tools: {} });
-      store = (store && store.__ext_tools) || {};
-      delete store[namespace];
-      await set({ __ext_tools: { ...store } });
-      rs();
+      let delKeys = [];
+      let all = await get(null);
+      const keys = Object.keys(all);
+      for (let index = 0; index < keys.length; index++) {
+        const key = keys[index];
+        if (key.indexOf(namespace) === 0) delKeys.push(key);
+      }
+      await remove(delKeys);
+
+      return rs();
     }
 
     chrome.storage.local.clear(() => {
@@ -32,9 +45,9 @@ export const clear = (namespace = null) => {
   });
 };
 
-export const remove = (keys) => {
+export const remove = keys => {
   return new Promise((rs, rj) => {
-    chrome.storage.local.remove(keys, function () {
+    chrome.storage.local.remove(keys, function() {
       rs();
     });
   });
@@ -54,28 +67,12 @@ const getRootStore = async () => {
 };
 
 export const setStore = async (name, value, { namespace = '' } = {}) => {
-  let store = await getRootStore();
-  if (namespace) {
-    let spaceStore = store[namespace];
-    spaceStore = { ...spaceStore, [name]: value };
-    store = { ...store, [namespace]: spaceStore };
-    await set({ __ext_tools: JSON.stringify(store) });
-    return;
-  }
-
-  await set({ __ext_tools: JSON.stringify({ ...store, [name]: value }) });
-  return;
+  return await set({ [`${namespace}_${name}`]: value });
 };
 
 export const getStore = async (name, value = null, { namespace = '' } = {}) => {
-  let store = await getRootStore();
-
-  if (namespace) {
-    let spaceStore = (store && store[namespace]) || {};
-    return spaceStore[name] || value;
-  }
-
-  return (store && store[name]) || value;
+  let data = await get({ [`${namespace}_${name}`]: value });
+  return data[`${namespace}_${name}`] || value;
 };
 
 export const useStore = (name, { namespace = '' } = {}) => {
@@ -88,36 +85,21 @@ export const useStore = (name, { namespace = '' } = {}) => {
       const n = names[index];
       data[n] = await getStore(n, null, { namespace });
     }
-    setValue(data);
+    if (Object.keys(data).length) {
+      setValue(data);
+    }
 
-    chrome.storage.onChanged.addListener(function (changes, area) {
-      if (!changes.__ext_tools) return;
-      let store = null;
-
-      try {
-        store = JSON.parse(changes.__ext_tools.newValue || '{}');
-      } catch (error) {
-        store = {};
-      }
-
-      if (namespace) {
-        const spaceStore = store[namespace] || {};
-
-        const data = {};
-        for (let index = 0; index < names.length; index++) {
-          const n = names[index];
-          data[n] = spaceStore[n] || null;
-        }
-        setValue(data);
-        return;
-      }
-
+    chrome.storage.onChanged.addListener(function(changes, area) {
       const data = {};
       for (let index = 0; index < names.length; index++) {
         const n = names[index];
-        data[n] = store[n] || null;
+        let cd = changes[`${namespace}_${n}`] || null;
+        if (!cd) continue;
+        data[n] = cd.newValue || null;
       }
-      return setValue(data);
+      if (Object.keys(data).length) {
+        setValue(data);
+      }
     });
   }, [name, namespace]);
 

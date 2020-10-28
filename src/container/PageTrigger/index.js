@@ -3,23 +3,33 @@ import { getQuery } from '@/lib/url';
 import { holder } from '@/lib/helper';
 import { setStore, getStore } from '@/lib/storage';
 import { sendMsg } from '@/lib/runtime';
-import Crawler from '@/crawler';
+import Crawler from '@/crawlers';
 import style from './style.scss';
 
 const PageDetail = () => {
   const forwardType = getQuery('__forward_type');
   const itemIdx = getQuery('__item_idx');
+  const cid = getQuery('__cid');
   const csId = getQuery('__cs_id');
   const storeKwds = getQuery('__store_kwds');
   const triggedKey = `trigged_${itemIdx}`;
   const namespace = `cs_${csId}`;
-  const crawler = Crawler({ document });
 
   useEffect(async () => {
     const trigged = await getStore(triggedKey, false, { namespace });
+    const crawler = await Crawler({ cid });
+    crawler.setDocument(document);
 
     if (forwardType === '1' && !trigged) {
-      await sendMsg('new_tab', { csId, pageType: 'trigger', itemIdx, storeKwds, forwardType: parseInt(forwardType) });
+      await holder(300);
+
+      await sendMsg('on_trigger_page_opened', {
+        csId,
+        pageType: 'trigger',
+        itemIdx,
+        storeKwds,
+        forwardType: parseInt(forwardType),
+      });
 
       await setStore(triggedKey, true, { namespace });
       const $trigger = crawler.getDetailTrigger(itemIdx);
@@ -31,16 +41,25 @@ const PageDetail = () => {
       const coupons = await getStore('coupons', [], { namespace });
       if (coupons[itemIdx]) {
         coupons[itemIdx].code = code;
+        await setStore('coupons', coupons, { namespace });
       }
-
-      await setStore('coupons', coupons, { namespace });
 
       await sendMsg('close_tab');
     } else if (forwardType === '2') {
       await holder(300);
-      await sendMsg('new_tab', { csId, pageType: 'trigger', itemIdx, storeKwds, forwardType: parseInt(forwardType) });
+
+      await sendMsg('on_trigger_page_opened', {
+        csId,
+        pageType: 'trigger',
+        itemIdx,
+        storeKwds,
+        forwardType: parseInt(forwardType),
+      });
+
       const $trigger = crawler.getDetailTrigger(itemIdx);
       $trigger && $trigger.click();
+
+      await sendMsg('close_tab');
     }
   }, []);
 
