@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import gc from '@/lib/graphql-request';
 
-export const getCompetitorById = async (id) => {
+export const getCompetitorById = async id => {
   let rs = await gc().request(
     gql`
       query getCompetitor($id: Int!) {
@@ -22,27 +22,55 @@ export const getCompetitorById = async (id) => {
   return row;
 };
 
-export const getCouponsByCsId = async (csId) => {
+export const getCsInfo = async csId => {
   let rs = await gc().request(
     gql`
-      query getCouponsByCsId($csId: Int!) {
-        getCouponsByCsId(csId: $csId) {
-          id
-          tid
-          type
-          status
-          code
-          title
-          url
-          description
-          expireAt
-          usedNum
-          isValid
+      query cs($id: Int!) {
+        node(id: $id) {
+          cs {
+            id
+            cid
+            sid
+            cantAutoComplete
+            oType
+            urlPath
+            visitUrl
+            country
+            status
+            name
+            domain
+            coupons {
+              id
+              tid
+              type
+              status
+              code
+              title
+              url
+              description
+              expireAt
+              usedNum
+              isValid
+            }
+          }
         }
       }
     `,
-    { csId }
+    { id: csId }
   );
-  const rows = (rs && rs.getCouponsByCsId) || [];
-  return rows;
+  const row = (rs && rs.node && rs.node.cs) || {};
+  return row;
+};
+
+export const saveData = async ({ coupons, domain, csId }) => {
+  let rs = await gc().request(
+    gql`
+      mutation saveCsCoupons($data: JSON!) {
+        saveCsCoupons(data: $data)
+      }
+    `,
+    { data: { coupons, domain, csId } }
+  );
+  const row = (rs && rs.node && rs.node.competitor) || null;
+  return row;
 };

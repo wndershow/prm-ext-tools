@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "axios": "^0.20.0",
+    "cogo-toast": "^4.2.3",
     "dayjs": "^1.9.4",
     "graphql": "^15.4.0",
     "graphql-request": "^3.3.0",

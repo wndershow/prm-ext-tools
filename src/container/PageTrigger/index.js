@@ -6,7 +6,7 @@ import { sendMsg } from '@/lib/runtime';
 import Crawler from '@/crawlers';
 import style from './style.scss';
 
-const PageDetail = () => {
+const PageTrigger = () => {
   const forwardType = getQuery('__forward_type');
   const itemIdx = getQuery('__item_idx');
   const cid = getQuery('__cid');
@@ -39,8 +39,6 @@ const PageDetail = () => {
       crawler.setDocument(document);
       const code = crawler.getCouponDetailCode();
 
-      console.info(code, '_____');
-
       const coupons = await getStore('coupons', [], { namespace });
       if (coupons[itemIdx] && code) {
         coupons[itemIdx].code = code;
@@ -71,4 +69,4 @@ const PageDetail = () => {
   );
 };
 
-export default PageDetail;
+export default PageTrigger;

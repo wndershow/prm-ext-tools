@@ -1,13 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import style from './style.scss';
 import ListForm from '@/components/ListForm';
-import { useStore, clear, setStore, getAll } from '@/lib/storage';
+import { useStore, clear, setStore } from '@/lib/storage';
 import { getQuery, getCurrentUrlPath } from '@/lib/url';
+import * as $api from '@/apis';
 import Crawler from '@/crawlers';
 
 const PageList = () => {
   const [showListForm, setShowListForm] = useState(false);
   const [hideListForm, setHideListForm] = useState(false);
+  const [csDomain, setCsDomain] = useState('');
+  const [csStauts, setCsStatus] = useState('');
+
   const crawler = useRef(null);
 
   const cid = getQuery('__cid');
@@ -17,7 +21,6 @@ const PageList = () => {
   const namespace = `cs_${csId}`;
 
   let { coupons } = useStore('coupons', { namespace });
-  coupons = coupons || [];
 
   const handleStart = async () => {
     await clear(namespace);
@@ -26,10 +29,15 @@ const PageList = () => {
 
     const csUrl = getCurrentUrlPath();
 
+    const { coupons: sces = [], domain, status } = await $api.getCsInfo(csId);
+    setCsDomain(domain);
+    setCsStatus(status);
+
     let ces = await crawler.current.getCoupons({
       csId,
       storeKwds,
       csUrl,
+      sourceCoupons: sces,
     });
 
     await setStore('coupons', ces, { namespace });
@@ -38,8 +46,6 @@ const PageList = () => {
   };
 
   useEffect(async () => {
-    // const sourceCoupons = await $api.getCouponsByCsId(csId);
-
     const c = await Crawler({ cid });
     c.setDocument(document);
     crawler.current = c;
@@ -50,6 +56,8 @@ const PageList = () => {
     c.setDocument(document);
     crawler.current = c;
   };
+
+  coupons = coupons || [];
 
   return (
     <div className="container-page-list">
@@ -80,6 +88,10 @@ const PageList = () => {
           coupons={coupons}
           onClose={() => setShowListForm(false)}
           onHide={() => setHideListForm(true)}
+          supportCouponItemUrl={crawler.current.supportCouponItemUrl}
+          csDomain={csDomain}
+          csStatus={csStauts}
+          csId={csId}
         ></ListForm>
       )}
 

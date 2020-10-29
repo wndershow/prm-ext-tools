@@ -57,3 +57,7 @@ a {
   cursor: pointer;
   text-decoration: underline;
 }
+
+#ct-container {
+  z-index: 500000 !important;
+}

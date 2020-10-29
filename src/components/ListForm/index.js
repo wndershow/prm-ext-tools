@@ -1,56 +1,89 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import style from './style.scss';
+import * as $api from '@/apis';
+import cogoToast from 'cogo-toast';
 
-const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null, className = '' }) => {
+const ListForm = ({
+  onClose = null,
+  coupons = [],
+  onChange = null,
+  onHide = null,
+  className = '',
+  supportCouponItemUrl = false,
+  csDomain = '',
+  csStatus = '',
+  csId = 0,
+}) => {
   const st = useRef(null);
   const [cpid, setCpid] = useState(0);
+  const [changed, setChanged] = useState({ fieldName: '', idx: -1, value: '' });
+  const [domain, setDomain] = useState(csDomain);
+  const [loading, setLoading] = useState(false);
 
-  const handleOnSave = async () => {
-    console.info(coupons);
-  };
+  const ces = [...coupons];
+  if (changed.fieldName) {
+    ces[changed.idx][changed.fieldName] = changed.value;
+  }
 
-  const handleBatch = async () => {
-    coupons.forEach((n) => {
-      window.open(n.triggerUrl, '_blank');
+  const handleSave = async () => {
+    setLoading(true);
+    await $api.saveData({ coupons: ces, domain, csId });
+    setLoading(false);
+    cogoToast.success('save successed!', {
+      toastContainerID: '#ct-ctn',
+      hideAfter: 0,
     });
   };
 
-  const handleAuto = async () => {
-    window.open(c.triggerUrl, '_blank');
-  };
-
   const handleItemFieldChange = (fieldName, idx, value) => {
+    setChanged({ fieldName, idx, value });
+
     if (st && st.current) clearTimeout(st.current);
     st.current = setTimeout(() => {
-      let c = coupons[idx];
-      c[fieldName] = value;
-      onChange && onChange({ idx, value: c });
+      onChange && onChange({ idx, value: ces[idx] });
       clearTimeout(st.current);
     }, 500);
   };
 
+  useEffect(() => {
+    setChanged({ fieldName: '', idx: -1, value: '' });
+  }, [coupons]);
+
   return (
-    <div className={`com-list-form ${className}`}>
+    <div id="com-list-form" className={`com-list-form ${className}`}>
       <div className="com-list-form-inner">
         <div className="tr space">
-          <a onClick={onHide}>hide</a>
-          <a onClick={onHide}>close</a>
+          <a onClick={onHide}>Hide</a>
+          <a onClick={onClose}>Close</a>
         </div>
-        <div className="red mb2">note: need login</div>
+        <div className="red mb1">note: need login</div>
+        <div className="mb1">
+          Cs Domain:
+          {csStatus === 'enable' && csDomain}
+          {csStatus === 'pedding-complete' && (
+            <input
+              type="text"
+              value={domain}
+              onChange={e => {
+                setDomain(e.target.value);
+              }}
+            />
+          )}
+        </div>
         <table className="mb2">
           <thead>
             <tr>
-              <th>id</th>
-              <th width="280">title</th>
-              <th width="280">url</th>
-              <th width="120">actions</th>
+              <th>Id</th>
+              <th width="280">Title</th>
+              <th width="280">{supportCouponItemUrl ? 'Url' : 'Term'}</th>
+              <th width="120">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {coupons.map((n, idx) => {
+            {ces.map((n, idx) => {
               return (
                 <tr
-                  key={n.id}
+                  key={`${n.id}__${idx}`}
                   className={n.__id === cpid && '_c'}
                   onClick={() => {
                     setCpid(n.__id);
@@ -62,15 +95,12 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                         <input
                           className="__id"
                           type="text"
-                          defaultValue={n.__id}
-                          onChange={(e) => handleItemFieldChange('__id', idx, e.target.value)}
+                          value={n.__id}
+                          onChange={e => handleItemFieldChange('__id', idx, e.target.value)}
                         />
                       </div>
                       <div className="flex-auto">
-                        <select
-                          defaultValue={n.type}
-                          onChange={(e) => handleItemFieldChange('type', idx, e.target.value)}
-                        >
+                        <select value={n.type} onChange={e => handleItemFieldChange('type', idx, e.target.value)}>
                           <option value="code">code</option>
                           <option value="deal">deal</option>
                         </select>
@@ -84,8 +114,8 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                             placeholder="code"
                             type="text"
                             className={`db ${!!!n.code.trim() && 'error'}`}
-                            defaultValue={n.code}
-                            onChange={(e) => handleItemFieldChange('code', idx, e.target.value)}
+                            value={n.code}
+                            onChange={e => handleItemFieldChange('code', idx, e.target.value)}
                           />
                         ) : (
                           '---'
@@ -96,8 +126,8 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                         <input
                           placeholder="expire at"
                           type="text"
-                          defaultValue={n.expireAt}
-                          onChange={(e) => handleItemFieldChange('expireAt', idx, e.target.value)}
+                          value={n.expireAt}
+                          onChange={e => handleItemFieldChange('expireAt', idx, e.target.value)}
                         />
                       </div>
                     </div>
@@ -105,9 +135,9 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                     <div className="flex items-center">
                       <div className="pr1 flex-shrink-0" style={{ width: '130px' }}>
                         <select
-                          placeholder="valid"
-                          defaultValue={n.valid}
-                          onChange={(e) => handleItemFieldChange('valid', idx, e.target.value)}
+                          placeholder="is valid"
+                          value={n.isValid}
+                          onChange={e => handleItemFieldChange('isValid', idx, e.target.value)}
                         >
                           <option value="0">no</option>
                           <option value="1">yes</option>
@@ -116,8 +146,8 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                       <div className="flex-auto">
                         <input
                           type="text"
-                          defaultValue={n.usedNum}
-                          onChange={(e) => handleItemFieldChange('usedNum', idx, e.target.value)}
+                          value={n.usedNum}
+                          onChange={e => handleItemFieldChange('usedNum', idx, e.target.value)}
                         />
                       </div>
                     </div>
@@ -129,45 +159,49 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
                         placeholder="title"
                         className="db"
                         type="text"
-                        defaultValue={n.title}
-                        onChange={(e) => handleItemFieldChange('title', idx, e.target.value)}
+                        value={n.title}
+                        onChange={e => handleItemFieldChange('title', idx, e.target.value)}
                       />
                     </div>
 
                     <div>
                       <textarea
                         placeholder="description"
-                        defaultValue={n.description}
+                        value={n.description}
                         rows={3}
-                        onChange={(e) => handleItemFieldChange('description', idx, e.target.value)}
+                        onChange={e => handleItemFieldChange('description', idx, e.target.value)}
                       />
                     </div>
                   </td>
 
                   <td>
-                    <div className="mb1">
-                      <input
-                        placeholder="url"
-                        className={`db ${!!!n.url.trim() && 'warnning'}`}
-                        type="text"
-                        defaultValue={n.url}
-                        onChange={(e) => handleItemFieldChange('url', idx, e.target.value)}
-                      />
-                    </div>
+                    {supportCouponItemUrl && (
+                      <div className="mb1">
+                        <input
+                          placeholder="url"
+                          className={`db ${!!!n.url.trim() && 'warnning'}`}
+                          type="text"
+                          value={n.url}
+                          onChange={e => handleItemFieldChange('url', idx, e.target.value)}
+                        />
+                      </div>
+                    )}
 
                     <div>
                       <textarea
                         placeholder="term"
-                        defaultValue={n.term}
-                        rows={3}
-                        onChange={(e) => handleItemFieldChange('term', idx, e.target.value)}
+                        value={n.term}
+                        rows={supportCouponItemUrl ? 3 : 5}
+                        onChange={e => handleItemFieldChange('term', idx, e.target.value)}
                       />
                     </div>
                   </td>
                   <td className="tc">
-                    <a href={n.triggerUrl} target="_blank">
-                      Fire
-                    </a>
+                    {(n.type === 'code' || supportCouponItemUrl) && n.triggerUrl && (
+                      <a href={`${n.triggerUrl}&__item_idx=${idx}`} target="_blank">
+                        Fire
+                      </a>
+                    )}
                   </td>
                 </tr>
               );
@@ -175,8 +209,10 @@ const ListForm = ({ onClose = null, coupons = [], onChange = null, onHide = null
           </tbody>
         </table>
 
-        <div>
-          <button onClick={handleOnSave}>save</button>
+        <div className="space">
+          <button className="pure-button pure-button-primary" onClick={handleSave}>
+            Save{loading && '...'}
+          </button>
         </div>
       </div>
 

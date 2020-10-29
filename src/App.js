@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import style from '@/app.scss';
 import PageList from '@/container/PageList';
 import PageTrigger from '@/container/PageTrigger';
+import PageDetail from '@/container/PageDetail';
 import * as _storage from '@/lib/storage';
 import { getQuery } from '@/lib/url';
 
@@ -23,6 +24,8 @@ export default () => {
     <div className="app">
       {pageType === 'list' && <PageList></PageList>}
       {pageType === 'trigger' && <PageTrigger></PageTrigger>}
+      {pageType === 'detail' && <PageDetail></PageDetail>}
+      <div id="ct-ctn"></div>
       <style>{style[0][1]}</style>
     </div>
   );

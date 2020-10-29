@@ -12,6 +12,7 @@ export default {
   cid: 0,
   document: null,
   dayjs,
+  supportCouponItemUrl: false,
 
   setCid(cid) {
     this.cid = cid;
@@ -106,6 +107,22 @@ export default {
     return 'click';
   },
 
+  getCouponItemJumpUrl($item, { csUrl, csId, storeKwds, type, code, id } = {}) {
+    return '';
+  },
+
+  getCouponItemTriggerUrl($item, { csUrl, csId, storeKwds, type, code, id } = {}) {
+    let triggerType = this.getCouponItemTriggerType($item);
+    if (triggerType === 'click') {
+      // note supportCouponItemUrl
+
+      let forwardType = this.getCouponItemForwardType($item, { type, code });
+      return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=${triggerType}&__forward_type=${forwardType}&__cid=${this.cid}&__cs_id=${csId}&__store_kwds=${storeKwds}`;
+    } else if (triggerType === 'jump') {
+      return this.getCouponItemJumpUrl($item, { csUrl, csId, storeKwds, type, code, id });
+    }
+  },
+
   /**
    * @param {*} $item
    * 1: trigger page jump out to store or product page, coupon detail page open
@@ -117,13 +134,6 @@ export default {
     if (type === 'code' && !code) return 1;
     if (type === 'code' && code) return 2;
     return 3;
-  },
-
-  getCouponItemTriggerUrl($item, { csUrl, itemIdx, csId, storeKwds, type, code } = {}) {
-    let triggerType = this.getCouponItemTriggerType($item);
-    if (triggerType === 'na') return '';
-    let forwardType = this.getCouponItemForwardType($item, { type, code });
-    return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=${triggerType}&__forward_type=${forwardType}&__item_idx=${itemIdx}&__cid=${this.cid}&__cs_id=${csId}&__store_kwds=${storeKwds}`;
   },
 
   selectorDetailTrigger: 'div.voucher-btn,a.cept-dealBtn,button.voucher-codeCopyButton>a',
@@ -140,7 +150,7 @@ export default {
     return code;
   },
 
-  getCoupons({ csId, storeKwds, csUrl } = {}) {
+  getCoupons({ csId, storeKwds, csUrl, sourceCoupons = [] } = {}) {
     const $couponItems = this.getCouponItems();
 
     let ces = [];
@@ -157,7 +167,7 @@ export default {
 
       let expireAt = this.getCouponItemExpireAt($item);
 
-      let valid = this.getCouponItemValid($item);
+      let isValid = this.getCouponItemValid($item);
 
       let usedNum = this.getCouponItemUsedNum($item);
 
@@ -165,7 +175,7 @@ export default {
 
       let term = this.getCouponItemTerm($item);
 
-      let triggerUrl = this.getCouponItemTriggerUrl($item, { itemIdx: i, csId, storeKwds, type, code, csUrl });
+      let triggerUrl = this.getCouponItemTriggerUrl($item, { csId, storeKwds, type, code, csUrl, id });
 
       ces.push({
         __id: id,
@@ -173,7 +183,7 @@ export default {
         type,
         code,
         expireAt,
-        valid,
+        isValid,
         usedNum,
         url: '',
         term,
@@ -182,6 +192,10 @@ export default {
         status: 'pendding',
       });
     });
+
+    if (sourceCoupons.length) {
+      ces = this._mixinCoupons({ coupons: ces, sourceCoupons });
+    }
 
     return ces;
   },
@@ -255,5 +269,56 @@ export default {
     }
     if (!value) return defaultValue;
     return value.trim();
+  },
+
+  _mixinCoupons({ coupons, sourceCoupons }) {
+    if (!coupons || !coupons.length) return [];
+    if (!sourceCoupons || !sourceCoupons.length) return coupons;
+
+    let kv_id_sourceCoupon = {};
+    sourceCoupons.forEach(n => {
+      kv_id_sourceCoupon[n.tid] = n;
+    });
+
+    coupons = coupons.map((n, i) => {
+      let sc = kv_id_sourceCoupon[n.__id] || null;
+      if (!sc) return n;
+      n.code = sc.code || '';
+      n.url = sc.url || '';
+      return n;
+    });
+
+    // coupons.sort((a, b) => {
+    //   let v1 = 0;
+    //   let v2 = 0;
+
+    //   if (a.type === 'code') {
+    //     v1 += 1000;
+    //   }
+
+    //   if (!a.code) {
+    //     v1 += 1000;
+    //   }
+
+    //   if (!a.url) {
+    //     v1 += 1000;
+    //   }
+
+    //   if (b.type === 'code') {
+    //     v2 += 1000;
+    //   }
+
+    //   if (!b.code) {
+    //     v2 += 1000;
+    //   }
+
+    //   if (!b.url) {
+    //     v2 += 1000;
+    //   }
+
+    //   return v2 - v1;
+    // });
+
+    return coupons;
   },
 };
