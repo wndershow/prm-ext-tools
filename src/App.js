@@ -25,7 +25,6 @@ export default () => {
       {pageType === 'list' && <PageList></PageList>}
       {pageType === 'trigger' && <PageTrigger></PageTrigger>}
       {pageType === 'detail' && <PageDetail></PageDetail>}
-      <div id="ct-ctn"></div>
       <style>{style[0][1]}</style>
     </div>
   );

@@ -9,6 +9,8 @@ import Crawler from '@/crawlers';
 const PageList = () => {
   const [showListForm, setShowListForm] = useState(false);
   const [hideListForm, setHideListForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [csDomain, setCsDomain] = useState('');
   const [csStauts, setCsStatus] = useState('');
 
@@ -24,7 +26,7 @@ const PageList = () => {
 
   const handleStart = async () => {
     await clear(namespace);
-
+    setLoading(true);
     setHideListForm(false);
 
     const csUrl = getCurrentUrlPath();
@@ -43,6 +45,8 @@ const PageList = () => {
     await setStore('coupons', ces, { namespace });
 
     setShowListForm(true);
+
+    setLoading(false);
   };
 
   useEffect(async () => {
@@ -52,9 +56,11 @@ const PageList = () => {
   }, []);
 
   const handleRefresh = async () => {
+    setLoadingRefresh(true);
     const c = await Crawler({ cid, cache: false });
     c.setDocument(document);
     crawler.current = c;
+    setLoadingRefresh(false);
   };
 
   coupons = coupons || [];
@@ -63,17 +69,17 @@ const PageList = () => {
     <div className="container-page-list">
       <div className="-menus">
         <div className="mb1">
-          <button onClick={handleStart}>start</button>
+          <button onClick={handleStart}>Start{loading && '...'}</button>
         </div>
 
         {showListForm && hideListForm && (
           <div className="mb1">
-            <button onClick={() => setHideListForm(false)}>show list</button>
+            <button onClick={() => setHideListForm(false)}>Show list</button>
           </div>
         )}
 
         <div className="mb1">
-          <button onClick={handleRefresh}>refresh</button>
+          <button onClick={handleRefresh}>Refresh{loadingRefresh && '...'}</button>
         </div>
       </div>
 
