@@ -1,8 +1,8 @@
 import { gql } from 'graphql-request';
 import gc from '@/lib/graphql-request';
 
-export const getCompetitorById = async (id) => {
-  let rs = await gc.request(
+export const getCompetitorById = async (id, { st = 's2' } = {}) => {
+  let rs = await gc(st).request(
     gql`
       query getCompetitor($id: Int!) {
         node(id: $id) {
@@ -22,8 +22,8 @@ export const getCompetitorById = async (id) => {
   return row;
 };
 
-export const getCsInfo = async (csId) => {
-  let rs = await gc.request(
+export const getCsInfo = async (csId, { st = 's2' } = {}) => {
+  let rs = await gc(st).request(
     gql`
       query cs($id: Int!) {
         node(id: $id) {
@@ -62,8 +62,8 @@ export const getCsInfo = async (csId) => {
   return row;
 };
 
-export const saveData = async ({ coupons, domain, csId }) => {
-  let rs = await gc.request(
+export const saveData = async ({ coupons, domain, csId }, { st = 's2' } = {}) => {
+  let rs = await gc(st).request(
     gql`
       mutation saveCsCoupons($data: JSON!) {
         saveCsCoupons(data: $data)

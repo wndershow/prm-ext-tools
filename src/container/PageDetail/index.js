@@ -6,13 +6,14 @@ import Crawler from '@/crawlers';
 import style from './style.scss';
 
 const PageDetail = () => {
+  const serverType = getQuery('__st');
   const itemIdx = getQuery('__item_idx');
   const cid = getQuery('__cid');
   const csId = getQuery('__cs_id');
   const namespace = `cs_${csId}`;
 
   useEffect(async () => {
-    const crawler = await Crawler({ cid });
+    const crawler = await Crawler({ cid }, { st: serverType });
     crawler.setDocument(document);
 
     const code = crawler.getCouponDetailCode();

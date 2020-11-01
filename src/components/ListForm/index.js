@@ -13,6 +13,7 @@ const ListForm = ({
   csDomain = '',
   csStatus = '',
   csId = 0,
+  serverType = 's2',
 }) => {
   const st = useRef(null);
   const [cpid, setCpid] = useState(0);
@@ -27,7 +28,7 @@ const ListForm = ({
 
   const handleSave = async () => {
     setLoading(true);
-    await $api.saveData({ coupons: ces, domain, csId });
+    await $api.saveData({ coupons: ces, domain, csId }, { st: serverType });
     setLoading(false);
     cogoToast.success('save successed!');
   };
@@ -61,7 +62,7 @@ const ListForm = ({
             <input
               type="text"
               value={domain}
-              onChange={(e) => {
+              onChange={e => {
                 setDomain(e.target.value);
               }}
             />
@@ -93,11 +94,11 @@ const ListForm = ({
                           className="__id"
                           type="text"
                           value={n.__id}
-                          onChange={(e) => handleItemFieldChange('__id', idx, e.target.value)}
+                          onChange={e => handleItemFieldChange('__id', idx, e.target.value)}
                         />
                       </div>
                       <div className="flex-auto">
-                        <select value={n.type} onChange={(e) => handleItemFieldChange('type', idx, e.target.value)}>
+                        <select value={n.type} onChange={e => handleItemFieldChange('type', idx, e.target.value)}>
                           <option value="code">code</option>
                           <option value="deal">deal</option>
                         </select>
@@ -112,7 +113,7 @@ const ListForm = ({
                             type="text"
                             className={`db ${!!!n.code.trim() && 'error'}`}
                             value={n.code}
-                            onChange={(e) => handleItemFieldChange('code', idx, e.target.value)}
+                            onChange={e => handleItemFieldChange('code', idx, e.target.value)}
                           />
                         ) : (
                           '---'
@@ -124,7 +125,7 @@ const ListForm = ({
                           placeholder="expire at"
                           type="text"
                           value={n.expireAt}
-                          onChange={(e) => handleItemFieldChange('expireAt', idx, e.target.value)}
+                          onChange={e => handleItemFieldChange('expireAt', idx, e.target.value)}
                         />
                       </div>
                     </div>
@@ -134,7 +135,7 @@ const ListForm = ({
                         <select
                           placeholder="is valid"
                           value={n.isValid}
-                          onChange={(e) => handleItemFieldChange('isValid', idx, e.target.value)}
+                          onChange={e => handleItemFieldChange('isValid', idx, e.target.value)}
                         >
                           <option value="0">no</option>
                           <option value="1">yes</option>
@@ -144,7 +145,7 @@ const ListForm = ({
                         <input
                           type="text"
                           value={n.usedNum}
-                          onChange={(e) => handleItemFieldChange('usedNum', idx, e.target.value)}
+                          onChange={e => handleItemFieldChange('usedNum', idx, e.target.value)}
                         />
                       </div>
                     </div>
@@ -157,7 +158,7 @@ const ListForm = ({
                         className="db"
                         type="text"
                         value={n.title}
-                        onChange={(e) => handleItemFieldChange('title', idx, e.target.value)}
+                        onChange={e => handleItemFieldChange('title', idx, e.target.value)}
                       />
                     </div>
 
@@ -166,7 +167,7 @@ const ListForm = ({
                         placeholder="description"
                         value={n.description}
                         rows={3}
-                        onChange={(e) => handleItemFieldChange('description', idx, e.target.value)}
+                        onChange={e => handleItemFieldChange('description', idx, e.target.value)}
                       />
                     </div>
                   </td>
@@ -179,7 +180,7 @@ const ListForm = ({
                           className={`db ${!!!n.url.trim() && 'warnning'}`}
                           type="text"
                           value={n.url}
-                          onChange={(e) => handleItemFieldChange('url', idx, e.target.value)}
+                          onChange={e => handleItemFieldChange('url', idx, e.target.value)}
                         />
                       </div>
                     )}
@@ -189,7 +190,7 @@ const ListForm = ({
                         placeholder="term"
                         value={n.term}
                         rows={supportCouponItemUrl ? 3 : 5}
-                        onChange={(e) => handleItemFieldChange('term', idx, e.target.value)}
+                        onChange={e => handleItemFieldChange('term', idx, e.target.value)}
                       />
                     </div>
                   </td>

@@ -7,6 +7,7 @@ import Crawler from '@/crawlers';
 import style from './style.scss';
 
 const PageTrigger = () => {
+  const serverType = getQuery('__st');
   const forwardType = getQuery('__forward_type');
   const itemIdx = getQuery('__item_idx');
   const cid = getQuery('__cid');
@@ -17,7 +18,7 @@ const PageTrigger = () => {
 
   useEffect(async () => {
     const trigged = await getStore(triggedKey, false, { namespace });
-    const crawler = await Crawler({ cid });
+    const crawler = await Crawler({ cid }, { st: serverType });
     await holder(300);
 
     crawler.setDocument(document);

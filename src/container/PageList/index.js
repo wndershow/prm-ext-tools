@@ -16,6 +16,7 @@ const PageList = () => {
 
   const crawler = useRef(null);
 
+  const serverType = getQuery('__st');
   const cid = getQuery('__cid');
   const csId = getQuery('__cs_id');
   const storeKwds = getQuery('__store_kwds');
@@ -31,7 +32,7 @@ const PageList = () => {
 
     const csUrl = getCurrentUrlPath();
 
-    const { coupons: sces = [], domain, status } = await $api.getCsInfo(csId);
+    const { coupons: sces = [], domain, status } = await $api.getCsInfo(csId, { st: serverType });
     setCsDomain(domain);
     setCsStatus(status);
 
@@ -50,7 +51,7 @@ const PageList = () => {
   };
 
   useEffect(async () => {
-    const c = await Crawler({ cid });
+    const c = await Crawler({ cid }, { st: serverType });
     c.setDocument(document);
     crawler.current = c;
   }, []);
@@ -98,6 +99,7 @@ const PageList = () => {
           csDomain={csDomain}
           csStatus={csStauts}
           csId={csId}
+          serverType={serverType}
         ></ListForm>
       )}
 

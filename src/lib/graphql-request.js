@@ -1,8 +1,16 @@
 import { GraphQLClient } from 'graphql-request';
-const endPoint = process.env.END_POINT;
-const client = new GraphQLClient(endPoint);
+const endPoint1 = process.env.END_POINT_S1;
+const endPoint2 = process.env.END_POINT_S2;
 
-export default client;
+export default (st = 's2') => {
+  let endPoint = endPoint2;
+
+  if (st === 's1') {
+    endPoint = endPoint1;
+  }
+
+  return new GraphQLClient(endPoint);
+};
 
 export const useGr = (
   query,

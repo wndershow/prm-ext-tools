@@ -2,7 +2,7 @@ import base from './base';
 import * as $api from '@/apis';
 import { getStore, setStore } from '@/lib/storage';
 
-export default async ({ cid, cache = true }) => {
+export default async ({ cid, cache = true }, { st = 's2' } = {}) => {
   let crawler = null;
 
   if (cache) {
@@ -13,7 +13,7 @@ export default async ({ cid, cache = true }) => {
     }
   }
 
-  const competitor = await $api.getCompetitorById(cid);
+  const competitor = await $api.getCompetitorById(cid, { st });
   if (!competitor) return null;
 
   await setStore(`crawler_${cid}`, competitor.crawler);
