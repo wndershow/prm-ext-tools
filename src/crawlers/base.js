@@ -21,6 +21,54 @@ export default {
     this.document = document;
   },
 
+  selectorRelateStoreArea: '',
+  getRelateStoreUrls(csUrl = '') {
+    if (!this.selectorRelateStoreArea) return [];
+    if (typeof this.selectorRelateStoreArea != 'string' && !this.selectorRelateStoreArea.length) return [];
+    let exp = new RegExp(` href="(.*?)"`, 'g');
+
+    csUrl = csUrl.repeat(/\/$/, '');
+
+    return this.getRelateStoreUrlsByExp(exp, csUrl);
+  },
+
+  getRelateStoreUrlsByExp(exp, csUrl = '') {
+    if (!exp) return [];
+
+    let conts = [];
+
+    let $areas = this.document.querySelectorAll(this.selectorRelateStoreArea);
+
+    $areas.forEach(($n) => {
+      if (!$n) return;
+      conts.push($n.innerHTML);
+    });
+
+    let t = null;
+    let urls = [];
+    conts.forEach((n) => {
+      while ((t = exp.exec(n))) {
+        let u = t[1].trim();
+        if (!this.filterRelateStoreUrl(u)) continue;
+        u = this.modifyRelateStoreUrl(u);
+        u && urls.push(u);
+      }
+    });
+
+    return urls;
+  },
+  filterRelateStoreUrl(url) {
+    return true;
+  },
+  modifyRelateStoreUrl(url) {
+    if (!url) return '';
+    url = url.replace(/\/$/, '');
+    if (url.indexOf('/') != 0) {
+      url = '/' + url;
+    }
+    return url;
+  },
+
   getShowAllTrigger() {
     return null;
   },
@@ -224,7 +272,7 @@ export default {
         let v = this._getValueBySelectorItem($el, n, defaultValue);
         vs.push(v);
       }
-      let _vs = _trim(vs.join(' '));
+      let _vs = vs.join(' ').trim();
       if (_vs) return _vs;
       return defaultValue;
     }
@@ -276,13 +324,17 @@ export default {
     if (!sourceCoupons || !sourceCoupons.length) return coupons;
 
     let kv_id_sourceCoupon = {};
-    sourceCoupons.forEach(n => {
+    sourceCoupons.forEach((n) => {
       kv_id_sourceCoupon[n.tid] = n;
     });
 
     coupons = coupons.map((n, i) => {
+      n.isNew = false;
       let sc = kv_id_sourceCoupon[n.__id] || null;
-      if (!sc) return n;
+      if (!sc) {
+        n.isNew = true;
+        return n;
+      }
       n.code = sc.code || '';
       n.url = sc.url || '';
       return n;
