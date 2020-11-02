@@ -14,12 +14,14 @@ const ListForm = ({
   csStatus = '',
   csId = 0,
   serverType = 's2',
+  relateStoreUrls = [],
 }) => {
   const st = useRef(null);
   const [cpid, setCpid] = useState(0);
   const [changed, setChanged] = useState({ fieldName: '', idx: -1, value: '' });
   const [domain, setDomain] = useState(csDomain);
   const [loading, setLoading] = useState(false);
+  const [delIdxs, setDelIdxs] = useState([]);
 
   const ces = [...coupons];
   if (changed.fieldName) {
@@ -27,10 +29,20 @@ const ListForm = ({
   }
 
   const handleSave = async () => {
-    setLoading(true);
-    await $api.saveData({ coupons: ces, domain, csId }, { st: serverType });
-    setLoading(false);
-    cogoToast.success('save successed!');
+    try {
+      setLoading(true);
+
+      await $api.saveData(
+        { coupons: ces, domain, csId, relateStoreUrls: relateStoreUrls.filter((n, i) => !delIdxs.includes(i)) },
+        { st: serverType }
+      );
+
+      cogoToast.success('save successed!');
+    } catch (error) {
+      cogoToast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleItemFieldChange = (fieldName, idx, value) => {
@@ -41,6 +53,10 @@ const ListForm = ({
       onChange && onChange({ idx, value: ces[idx] });
       clearTimeout(st.current);
     }, 500);
+  };
+
+  const handleDeleteRelateUrl = (i) => {
+    setDelIdxs([...delIdxs, i]);
   };
 
   useEffect(() => {
@@ -62,7 +78,7 @@ const ListForm = ({
             <input
               type="text"
               value={domain}
-              onChange={e => {
+              onChange={(e) => {
                 setDomain(e.target.value);
               }}
             />
@@ -87,18 +103,18 @@ const ListForm = ({
                     setCpid(n.__id);
                   }}
                 >
-                  <td className="tl">
+                  <td className={`tl ${n.isNew && '_new'}`}>
                     <div className="flex mb1 items-center">
                       <div className="pr1 flex-shrink-0" style={{ width: '130px' }}>
                         <input
                           className="__id"
                           type="text"
                           value={n.__id}
-                          onChange={e => handleItemFieldChange('__id', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('__id', idx, e.target.value)}
                         />
                       </div>
                       <div className="flex-auto">
-                        <select value={n.type} onChange={e => handleItemFieldChange('type', idx, e.target.value)}>
+                        <select value={n.type} onChange={(e) => handleItemFieldChange('type', idx, e.target.value)}>
                           <option value="code">code</option>
                           <option value="deal">deal</option>
                         </select>
@@ -113,7 +129,7 @@ const ListForm = ({
                             type="text"
                             className={`db ${!!!n.code.trim() && 'error'}`}
                             value={n.code}
-                            onChange={e => handleItemFieldChange('code', idx, e.target.value)}
+                            onChange={(e) => handleItemFieldChange('code', idx, e.target.value)}
                           />
                         ) : (
                           '---'
@@ -125,7 +141,7 @@ const ListForm = ({
                           placeholder="expire at"
                           type="text"
                           value={n.expireAt}
-                          onChange={e => handleItemFieldChange('expireAt', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('expireAt', idx, e.target.value)}
                         />
                       </div>
                     </div>
@@ -135,7 +151,7 @@ const ListForm = ({
                         <select
                           placeholder="is valid"
                           value={n.isValid}
-                          onChange={e => handleItemFieldChange('isValid', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('isValid', idx, e.target.value)}
                         >
                           <option value="0">no</option>
                           <option value="1">yes</option>
@@ -145,7 +161,7 @@ const ListForm = ({
                         <input
                           type="text"
                           value={n.usedNum}
-                          onChange={e => handleItemFieldChange('usedNum', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('usedNum', idx, e.target.value)}
                         />
                       </div>
                     </div>
@@ -158,7 +174,7 @@ const ListForm = ({
                         className="db"
                         type="text"
                         value={n.title}
-                        onChange={e => handleItemFieldChange('title', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('title', idx, e.target.value)}
                       />
                     </div>
 
@@ -167,7 +183,7 @@ const ListForm = ({
                         placeholder="description"
                         value={n.description}
                         rows={3}
-                        onChange={e => handleItemFieldChange('description', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('description', idx, e.target.value)}
                       />
                     </div>
                   </td>
@@ -180,7 +196,7 @@ const ListForm = ({
                           className={`db ${!!!n.url.trim() && 'warnning'}`}
                           type="text"
                           value={n.url}
-                          onChange={e => handleItemFieldChange('url', idx, e.target.value)}
+                          onChange={(e) => handleItemFieldChange('url', idx, e.target.value)}
                         />
                       </div>
                     )}
@@ -190,7 +206,7 @@ const ListForm = ({
                         placeholder="term"
                         value={n.term}
                         rows={supportCouponItemUrl ? 3 : 5}
-                        onChange={e => handleItemFieldChange('term', idx, e.target.value)}
+                        onChange={(e) => handleItemFieldChange('term', idx, e.target.value)}
                       />
                     </div>
                   </td>
@@ -206,6 +222,22 @@ const ListForm = ({
             })}
           </tbody>
         </table>
+
+        <div className="mb3">
+          <h3>relate stores</h3>
+          <ul>
+            {relateStoreUrls.map((n, i) => {
+              return (
+                <li key={i} className={`flex pvs ${delIdxs.includes(i) && 'tlt'}`}>
+                  <div className="flex-auto">{n}</div>
+                  <div>
+                    <a onClick={() => handleDeleteRelateUrl(i)}>Delete</a>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
         <div className="space">
           <button onClick={handleSave}>Save{loading && '...'}</button>

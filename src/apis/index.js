@@ -62,15 +62,20 @@ export const getCsInfo = async (csId, { st = 's2' } = {}) => {
   return row;
 };
 
-export const saveData = async ({ coupons, domain, csId }, { st = 's2' } = {}) => {
+export const saveData = async ({ coupons, domain, csId, relateStoreUrls = [] }, { st = 's2' } = {}) => {
   let rs = await gc(st).request(
     gql`
       mutation saveCsCoupons($data: JSON!) {
         saveCsCoupons(data: $data)
       }
     `,
-    { data: { coupons, domain, csId } }
+    { data: { coupons, domain, csId, relateStoreUrls } }
   );
+
+  if (rs && rs.errors) {
+    throw new Error(rs.errors[0].message);
+  }
+
   const row = (rs && rs.node && rs.node.competitor) || null;
   return row;
 };

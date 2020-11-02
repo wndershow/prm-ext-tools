@@ -13,6 +13,7 @@ const PageList = () => {
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [csDomain, setCsDomain] = useState('');
   const [csStauts, setCsStatus] = useState('');
+  const [relateStoreUrls, setRelateStoreUrls] = useState([]);
 
   const crawler = useRef(null);
 
@@ -42,6 +43,9 @@ const PageList = () => {
       csUrl,
       sourceCoupons: sces,
     });
+
+    const relateStoreUrls = crawler.current.getRelateStoreUrls(csUrl);
+    setRelateStoreUrls(relateStoreUrls);
 
     await setStore('coupons', ces, { namespace });
 
@@ -100,6 +104,7 @@ const PageList = () => {
           csStatus={csStauts}
           csId={csId}
           serverType={serverType}
+          relateStoreUrls={relateStoreUrls}
         ></ListForm>
       )}
 
