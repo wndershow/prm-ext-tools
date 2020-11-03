@@ -12,7 +12,7 @@ export default {
   cid: 0,
   document: null,
   dayjs,
-  supportCouponItemUrl: false,
+  supportCouponOutUrl: false,
 
   setCid(cid) {
     this.cid = cid;
@@ -227,9 +227,9 @@ export default {
 
       let term = this.getCouponItemTerm($item);
 
-      let detailUrl = this.getCouponDetailUrl($item, ({ csUrl, csId, storeKwds, type, code, id } = {}));
+      let detailUrl = this.getCouponDetailUrl($item, { csUrl, csId, storeKwds, type, code, id });
 
-      let outUrl = this.getCouponOutUrl($item, ({ csUrl, csId, storeKwds, type, code, id } = {}));
+      let outUrl = this.getCouponOutUrl($item, { csUrl, csId, storeKwds, type, code, id });
 
       let triggerUrl = this.getCouponItemTriggerUrl($item, { csId, storeKwds, type, code, csUrl, id });
 
@@ -330,6 +330,7 @@ export default {
   },
 
   _mixinCoupons({ coupons, sourceCoupons }) {
+    console.info(coupons, sourceCoupons);
     if (!coupons || !coupons.length) return [];
     if (!sourceCoupons || !sourceCoupons.length) return coupons;
 

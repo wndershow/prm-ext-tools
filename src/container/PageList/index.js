@@ -99,7 +99,7 @@ const PageList = () => {
           coupons={coupons}
           onClose={() => setShowListForm(false)}
           onHide={() => setHideListForm(true)}
-          supportCouponItemUrl={crawler.current.supportCouponItemUrl}
+          supportCouponOutUrl={crawler.current.supportCouponOutUrl}
           csDomain={csDomain}
           csStatus={csStauts}
           csId={csId}

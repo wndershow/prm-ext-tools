@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import style from './style.scss';
 import * as $api from '@/apis';
 import cogoToast from 'cogo-toast';
+import { sendMsg } from '@/lib/runtime';
 
 const ListForm = ({
   onClose = null,
@@ -9,7 +10,7 @@ const ListForm = ({
   onChange = null,
   onHide = null,
   className = '',
-  supportCouponItemUrl = false,
+  supportCouponOutUrl = false,
   csDomain = '',
   csStatus = '',
   csId = 0,
@@ -89,7 +90,7 @@ const ListForm = ({
             <tr>
               <th>Id</th>
               <th width="280">Title</th>
-              <th width="280">{supportCouponItemUrl ? 'Url' : 'Term'}</th>
+              <th width="280">{supportCouponOutUrl ? 'Url' : 'Term'}</th>
               <th width="120">Actions</th>
             </tr>
           </thead>
@@ -189,7 +190,7 @@ const ListForm = ({
                   </td>
 
                   <td>
-                    {supportCouponItemUrl && (
+                    {supportCouponOutUrl && (
                       <div className="mb1">
                         <input
                           placeholder="url"
@@ -205,20 +206,33 @@ const ListForm = ({
                       <textarea
                         placeholder="term"
                         value={n.term}
-                        rows={supportCouponItemUrl ? 3 : 5}
+                        rows={supportCouponOutUrl ? 3 : 5}
                         onChange={e => handleItemFieldChange('term', idx, e.target.value)}
                       />
                     </div>
                   </td>
                   <td className="tc">
-                    {(n.type === 'code' && !n.code) || supportCouponItemUrl}
-                    <a
-                      onClick={() => {
-                        window.open(`${n.triggerUrl}&__item_idx=${idx}`, '_blank');
-                      }}
-                    >
-                      Fire
-                    </a>
+                    {n.type === 'code' && n.detailUrl && (
+                      <a
+                        className="dib"
+                        onClick={() => {
+                          window.open(`${n.detailUrl}&__item_idx=${idx}`, '_blank');
+                        }}
+                      >
+                        Fetch Code
+                      </a>
+                    )}
+
+                    {supportCouponOutUrl && n.outUrl && (
+                      <a
+                        className="dib"
+                        onClick={() => {
+                          window.open(`${n.outUrl}`, '_blank');
+                        }}
+                      >
+                        Fetch Url
+                      </a>
+                    )}
                   </td>
                 </tr>
               );
