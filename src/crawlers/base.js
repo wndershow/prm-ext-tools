@@ -39,14 +39,14 @@ export default {
 
     let $areas = this.document.querySelectorAll(this.selectorRelateStoreArea);
 
-    $areas.forEach(($n) => {
+    $areas.forEach($n => {
       if (!$n) return;
       conts.push($n.innerHTML);
     });
 
     let t = null;
     let urls = [];
-    conts.forEach((n) => {
+    conts.forEach(n => {
       while ((t = exp.exec(n))) {
         let u = t[1].trim();
         if (!this.filterRelateStoreUrl(u)) continue;
@@ -161,14 +161,12 @@ export default {
 
   getCouponItemTriggerUrl($item, { csUrl, csId, storeKwds, type, code, id } = {}) {
     let triggerType = this.getCouponItemTriggerType($item);
-    if (triggerType === 'click') {
-      // note supportCouponItemUrl
 
-      let forwardType = this.getCouponItemForwardType($item, { type, code });
-      return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=${triggerType}&__forward_type=${forwardType}&__cid=${this.cid}&__cs_id=${csId}&__store_kwds=${storeKwds}`;
-    } else if (triggerType === 'jump') {
-      return this.getCouponItemJumpUrl($item, { csUrl, csId, storeKwds, type, code, id });
-    }
+    let jumpUrl = this.getCouponItemJumpUrl($item, { csUrl, csId, storeKwds, type, code, id });
+    if (jumpUrl) return jumpUrl;
+
+    let forwardType = this.getCouponItemForwardType($item, { type, code });
+    return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=${triggerType}&__forward_type=${forwardType}&__cid=${this.cid}&__cs_id=${csId}`;
   },
 
   /**
@@ -324,7 +322,7 @@ export default {
     if (!sourceCoupons || !sourceCoupons.length) return coupons;
 
     let kv_id_sourceCoupon = {};
-    sourceCoupons.forEach((n) => {
+    sourceCoupons.forEach(n => {
       kv_id_sourceCoupon[n.tid] = n;
     });
 
