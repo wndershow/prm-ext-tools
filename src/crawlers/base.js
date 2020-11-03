@@ -182,16 +182,18 @@ export default {
     return 3;
   },
 
-  selectorDetailTrigger: 'div.voucher-btn,a.cept-dealBtn,button.voucher-codeCopyButton>a',
+  selectorDetailTrigger: '',
   getDetailTrigger(idx) {
+    if (!this.selectorDetailTrigger) return;
     let $couponItems = this.getCouponItems();
     let $item = $couponItems[idx] || null;
     if (!$item) return null;
     return $item.querySelector(this.selectorDetailTrigger);
   },
 
-  selectorCouponDetailCode: 'div.popover-content input[data-copy-to-clipboard]@value',
+  selectorCouponDetailCode: '',
   getCouponDetailCode() {
+    if (!this.selectorCouponDetailCode) return '';
     let code = this._getValueBySelector(this.document, this.selectorCouponDetailCode);
     return code;
   },

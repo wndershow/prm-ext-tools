@@ -62,7 +62,7 @@ const PageList = () => {
 
   const handleRefresh = async () => {
     setLoadingRefresh(true);
-    const c = await Crawler({ cid, cache: false });
+    const c = await Crawler({ cid, cache: false }, { st: serverType });
     c.setDocument(document);
     crawler.current = c;
     setLoadingRefresh(false);
