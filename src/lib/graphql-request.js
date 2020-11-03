@@ -1,4 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
+const endPoint0 = process.env.END_POINT_S0;
 const endPoint1 = process.env.END_POINT_S1;
 const endPoint2 = process.env.END_POINT_S2;
 
@@ -7,6 +8,8 @@ export default (st = 's2') => {
 
   if (st === 's1') {
     endPoint = endPoint1;
+  } else if (st === 's0') {
+    endPoint = endPoint0;
   }
 
   return new GraphQLClient(endPoint);

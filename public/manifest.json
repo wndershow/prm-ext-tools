@@ -16,7 +16,7 @@
     "default_title": "prm-ext-tools",
     "default_popup": "index.html"
   },
-  "permissions": ["tabs", "storage", "https://gql.prmhunt.com/*"],
+  "permissions": ["tabs", "storage", "https://gql.prmhunt.com/*", "http://localhost:3300/graphql"],
   "background": {
     "scripts": ["background.js"],
     "persistent": false

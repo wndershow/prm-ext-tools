@@ -165,7 +165,7 @@ export default {
       // note supportCouponItemUrl
 
       let forwardType = this.getCouponItemForwardType($item, { type, code });
-      return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=${triggerType}&__forward_type=${forwardType}&__cid=${this.cid}&__cs_id=${csId}&__store_kwds=${storeKwds}`;
+      return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=click&__forward_type=${forwardType}&__cid=${this.cid}&__cs_id=${csId}`;
     } else if (triggerType === 'jump') {
       return this.getCouponItemJumpUrl($item, { csUrl, csId, storeKwds, type, code, id });
     }
@@ -184,16 +184,18 @@ export default {
     return 3;
   },
 
-  selectorDetailTrigger: 'div.voucher-btn,a.cept-dealBtn,button.voucher-codeCopyButton>a',
+  selectorDetailTrigger: '',
   getDetailTrigger(idx) {
+    if (!this.selectorDetailTrigger) return;
     let $couponItems = this.getCouponItems();
     let $item = $couponItems[idx] || null;
     if (!$item) return null;
     return $item.querySelector(this.selectorDetailTrigger);
   },
 
-  selectorCouponDetailCode: 'div.popover-content input[data-copy-to-clipboard]@value',
+  selectorCouponDetailCode: '',
   getCouponDetailCode() {
+    if (!this.selectorCouponDetailCode) return '';
     let code = this._getValueBySelector(this.document, this.selectorCouponDetailCode);
     return code;
   },
