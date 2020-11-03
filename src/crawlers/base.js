@@ -155,14 +155,18 @@ export default {
     return 'click';
   },
 
-  getCouponItemJumpUrl($item, { csUrl, csId, storeKwds, type, code, id } = {}) {
+  getCouponDetailUrl($item, { csUrl, csId, storeKwds, type, code, id } = {}) {
+    return '';
+  },
+
+  getCouponOutUrl($item, { csUrl, csId, storeKwds, type, code, id } = {}) {
     return '';
   },
 
   getCouponItemTriggerUrl($item, { csUrl, csId, storeKwds, type, code, id } = {}) {
     let triggerType = this.getCouponItemTriggerType($item);
 
-    let jumpUrl = this.getCouponItemJumpUrl($item, { csUrl, csId, storeKwds, type, code, id });
+    let jumpUrl = this.getCouponDetailUrl($item, { csUrl, csId, storeKwds, type, code, id });
     if (jumpUrl) return jumpUrl;
 
     let forwardType = this.getCouponItemForwardType($item, { type, code });
@@ -223,6 +227,10 @@ export default {
 
       let term = this.getCouponItemTerm($item);
 
+      let detailUrl = this.getCouponDetailUrl($item, ({ csUrl, csId, storeKwds, type, code, id } = {}));
+
+      let outUrl = this.getCouponOutUrl($item, ({ csUrl, csId, storeKwds, type, code, id } = {}));
+
       let triggerUrl = this.getCouponItemTriggerUrl($item, { csId, storeKwds, type, code, csUrl, id });
 
       ces.push({
@@ -236,6 +244,8 @@ export default {
         url: '',
         term,
         description,
+        detailUrl,
+        outUrl,
         triggerUrl,
         status: 'pendding',
       });
