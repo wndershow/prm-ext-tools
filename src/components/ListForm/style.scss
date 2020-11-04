@@ -64,17 +64,15 @@
 
   td {
     position: relative;
-    &._new::after {
-      content: '';
-      display: block;
-      width: 10px;
-      height: 10px;
-      background-color: #108ee9;
+    .idx {
       border-radius: 50%;
       position: absolute;
       top: 50%;
       left: -20px;
       transform: translateY(-50%);
+      &._new {
+        color: red;
+      }
     }
   }
 

@@ -164,13 +164,7 @@ export default {
   },
 
   getCouponItemTriggerUrl($item, { csUrl, csId, storeKwds, type, code, id } = {}) {
-    let triggerType = this.getCouponItemTriggerType($item);
-
-    let jumpUrl = this.getCouponDetailUrl($item, { csUrl, csId, storeKwds, type, code, id });
-    if (jumpUrl) return jumpUrl;
-
-    let forwardType = this.getCouponItemForwardType($item, { type, code });
-    return `${csUrl}?__ext_tools=y&__page_type=trigger&__trigger_type=${triggerType}&__forward_type=${forwardType}&__cid=${this.cid}&__cs_id=${csId}`;
+    return '';
   },
 
   /**
@@ -247,6 +241,7 @@ export default {
         detailUrl,
         outUrl,
         triggerUrl,
+        isNew: true,
         status: 'pendding',
       });
     });
@@ -330,7 +325,6 @@ export default {
   },
 
   _mixinCoupons({ coupons, sourceCoupons }) {
-    console.info(coupons, sourceCoupons);
     if (!coupons || !coupons.length) return [];
     if (!sourceCoupons || !sourceCoupons.length) return coupons;
 
@@ -340,12 +334,10 @@ export default {
     });
 
     coupons = coupons.map((n, i) => {
-      n.isNew = false;
       let sc = kv_id_sourceCoupon[n.__id] || null;
-      if (!sc) {
-        n.isNew = true;
-        return n;
-      }
+      if (!sc) return n;
+
+      n.isNew = false;
       n.code = sc.code || '';
       n.url = sc.url || '';
       return n;

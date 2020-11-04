@@ -104,7 +104,8 @@ const ListForm = ({
                     setCpid(n.__id);
                   }}
                 >
-                  <td className={`tl ${n.isNew && '_new'}`}>
+                  <td className={`tl`}>
+                    <div className={`idx ${n.isNew && '_new'}`}>{idx + 1}</div>
                     <div className="flex mb1 items-center">
                       <div className="pr1 flex-shrink-0" style={{ width: '130px' }}>
                         <input
@@ -212,27 +213,7 @@ const ListForm = ({
                     </div>
                   </td>
                   <td className="tc">
-                    {n.type === 'code' && n.detailUrl && (
-                      <a
-                        className="dib"
-                        onClick={() => {
-                          window.open(`${n.detailUrl}&__item_idx=${idx}`, '_blank');
-                        }}
-                      >
-                        Fetch Code
-                      </a>
-                    )}
-
-                    {supportCouponOutUrl && n.outUrl && (
-                      <a
-                        className="dib"
-                        onClick={() => {
-                          window.open(`${n.outUrl}`, '_blank');
-                        }}
-                      >
-                        Fetch Url
-                      </a>
-                    )}
+                    <ActionBar n={n} supportCouponOutUrl={supportCouponOutUrl} idx={idx}></ActionBar>
                   </td>
                 </tr>
               );
@@ -262,6 +243,77 @@ const ListForm = ({
       </div>
 
       <style>{style[0][1]}</style>
+    </div>
+  );
+};
+
+const ActionBar = ({ n, supportCouponOutUrl = false, idx }) => {
+  if (n.type === 'deal') {
+    if (n.outUrl) {
+      return (
+        <a
+          onClick={() => {
+            window.open(`${n.outUrl}`, '_blank');
+          }}
+        >
+          Fetch Url
+        </a>
+      );
+    }
+    return null;
+  }
+
+  if (n.triggerUrl) {
+    if (!n.code)
+      return (
+        <a
+          className="dib"
+          onClick={() => {
+            window.open(`${n.triggerUrl}&__item_idx=${idx}`, '_blank');
+          }}
+        >
+          Fetch Code
+        </a>
+      );
+
+    if (n.outUrl)
+      return (
+        <a
+          className="dib"
+          onClick={() => {
+            window.open(`${n.outUrl}`, '_blank');
+          }}
+        >
+          Fetch Url
+        </a>
+      );
+
+    return null;
+  }
+
+  return (
+    <div>
+      {n.type === 'code' && n.detailUrl && (
+        <a
+          className="dib"
+          onClick={() => {
+            window.open(`${n.detailUrl}&__item_idx=${idx}`, '_blank');
+          }}
+        >
+          Fetch Code
+        </a>
+      )}
+
+      {supportCouponOutUrl && n.outUrl && (
+        <a
+          className="dib"
+          onClick={() => {
+            window.open(`${n.outUrl}`, '_blank');
+          }}
+        >
+          Fetch Url
+        </a>
+      )}
     </div>
   );
 };
